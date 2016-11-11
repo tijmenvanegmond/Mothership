@@ -6,7 +6,8 @@ public class Node : MonoBehaviour
     public bool rendered;
     public int id;
     public int[] connections;
-    public Vector3 localSpawnPos;    
+    public Vector3 localSpawnPos;
+    public Quaternion localRotation = Quaternion.identity;
 
     public virtual Vector3 getConnectionPos(int x)
     {

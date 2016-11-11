@@ -25,13 +25,27 @@ public class C_ship : MonoBehaviour {
     void Start () {
         core = new PrismaNode(getUniqueId());
         core.localSpawnPos = Vector3.zero;
-
+        //les create a ship
         CubeNode node1 = new CubeNode(getUniqueId());
         CubeNode node2 = new CubeNode(getUniqueId());
-        CubeNode node3 = new CubeNode(getUniqueId());
+        core.SetConnection(2, node1, 0);
+        core.SetConnection(3, node2, 0);
 
-        core.SetConnection(2,node1,0);
-        core.SetConnection(3,node2,0);
+        PrismaNode node1a = new PrismaNode(getUniqueId());
+        PrismaNode node2a = new PrismaNode(getUniqueId());
+        node1.SetConnection(2, node1a, 0);
+        node2.SetConnection(2, node2a, 0);
+        AddToNodes(node1a);
+        AddToNodes(node2a);
+
+        PrismaNode node1b = new PrismaNode(getUniqueId());
+        PrismaNode node2b = new PrismaNode(getUniqueId());
+        node1a.SetConnection(2, node1b, 0);
+        node2a.SetConnection(4, node2b, 0);
+        AddToNodes(node1b);
+        AddToNodes(node2b);
+
+        CubeNode node3 = new CubeNode(getUniqueId());      
         core.SetConnection(4,node3,0);
 
         CubeNode node4 = new CubeNode(getUniqueId());
@@ -40,7 +54,13 @@ public class C_ship : MonoBehaviour {
 
         node3.SetConnection(1, node4, 0);
         node3.SetConnection(2, node5, 0);
-        node3.SetConnection(5, node6, 0);
+        node3.SetConnection(0, node6, 0);
+
+        CubeNode node7 = new CubeNode(getUniqueId());
+        node5.SetConnection(2, node7, 0);
+
+        CubeNode node8 = new CubeNode(getUniqueId());
+        node7.SetConnection(2, node8, 0);
 
         AddToNodes(core);
         AddToNodes(node1);
@@ -49,6 +69,8 @@ public class C_ship : MonoBehaviour {
         AddToNodes(node4);
         AddToNodes(node5);
         AddToNodes(node6);
+        AddToNodes(node7);
+        AddToNodes(node8);
         GenerateShip();
 
     }
@@ -56,20 +78,20 @@ public class C_ship : MonoBehaviour {
     void GenerateNode(Node node, Node nodeConnection, int connection)
     {       
     }
-
-   
+       
     void GenerateShip()
     {
         Queue<Node> nodeQueue = new Queue<Node>();
         nodeQueue.Enqueue(core);
 
-        while (nodeQueue.Count > 0)
+        //draw all nodes that are connected to the core
+        while (nodeQueue.Count > 0) 
         {
             Node curNode = nodeQueue.Dequeue();           
             GameObject newNodeGO = Instantiate(meshGO, transform) as GameObject;
             //newNodeGO.transform.parent = gameObject.transform;
             newNodeGO.transform.localPosition = curNode.localSpawnPos;
-            newNodeGO.transform.localRotation = Quaternion.identity;
+            newNodeGO.transform.localRotation = curNode.localRotation;
             curNode.rendered = true;
             for (int i = 0; i < curNode.connections.Length; i++)
             {
@@ -77,7 +99,12 @@ public class C_ship : MonoBehaviour {
                Node connNode = nodes[connID];
                 if (!connNode.rendered)
                 {
-                    connNode.localSpawnPos = curNode.localSpawnPos + curNode.getConnectionPos(i);
+                    Vector3 vector = curNode.getConnectionPos(i);
+                    //TODO: support prismas/allow spesific rotations (so its the same no matter the approach)
+                    //set the spawn postion as the curnodes pos + the conenction postion and 1normal rotated along curnodes rotation
+                    connNode.localSpawnPos = curNode.localSpawnPos + curNode.localRotation * (vector + vector.normalized/2);
+                    //rotate the node to look along the connection vector
+                    connNode.localRotation = curNode.localRotation * Quaternion.LookRotation(vector); 
                     nodeQueue.Enqueue(connNode);
                 }
             }            

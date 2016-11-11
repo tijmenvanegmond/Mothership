@@ -3,11 +3,13 @@ using System.Collections;
 
 public class PrismaNode : Node {
     
+    [SerializeField]
+    static GameObject GO;
     private static Vector3[] connectionPositions = new Vector3[] {  Vector3.up,
                                                                     Vector3.down,
-                                                                    new Vector3((float).375, 0, (float).216),
-                                                                    new Vector3(0, 0, (float)-.43301),
-                                                                    new Vector3((float)-.375,0, (float).216)}; //core,up, down, 60, 180, 300 
+                                                                    new Vector3((float).25, 0, (float).14434),
+                                                                    new Vector3(0, 0, (float)-.2886),
+                                                                    new Vector3((float)-.25,0, (float).14434)}; //core,up, down, 60, 180, 300 
     public override Vector3 getConnectionPos(int connectionNumber)
     {
         return connectionPositions[connectionNumber];
