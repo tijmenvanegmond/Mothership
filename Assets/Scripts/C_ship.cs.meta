@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ec1a1e301c57dd246a049860342d343c
+timeCreated: 1478873885
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - core_go: {instanceID: 0}
+  - meshGO: {fileID: 1000011176881208, guid: 3c6a7dfcf54d6ec4d801c6530c06fc90, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
