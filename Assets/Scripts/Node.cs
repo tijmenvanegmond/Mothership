@@ -2,15 +2,28 @@
 using System.Collections;
 
 public class Node : MonoBehaviour
-{
+{   
     public bool rendered;
-    public int id;
+    public int id;    
     public int[] connections;
+    public string type = "node";
     public Vector3 localSpawnPos;
     public Quaternion localRotation = Quaternion.identity;
-
-    public virtual Vector3 getConnectionPos(int x)
+    
+    public virtual Vector3 GetConnectionPos(int x)
     {
+        return Vector3.zero;
+    }
+
+    public virtual Vector3 GetPosConnected(int id)
+    {        
+        for (int i = 0; i < connections.Length; i++)
+        {
+            if (connections[i] == id)
+            {
+                return GetConnectionPos(i);
+            }
+        }
         return Vector3.zero;
     }
 
