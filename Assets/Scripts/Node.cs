@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Node : MonoBehaviour
 {   
@@ -9,7 +10,9 @@ public class Node : MonoBehaviour
     public string type = "node";
     public Vector3 localSpawnPos;
     public Quaternion localRotation = Quaternion.identity;
-    
+    //public Transform[] ports;
+    public IDictionary<string, Transform> ports;/// = new Dictionary<string, Transform>();
+
     public virtual Vector3 GetConnectionPos(int x)
     {
         return Vector3.zero;

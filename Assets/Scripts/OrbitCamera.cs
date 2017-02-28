@@ -15,19 +15,19 @@ public class OrbitCamera : MonoBehaviour {
         mouseDelta = Vector3.ClampMagnitude(mouseDelta, 5f);
         previousMousePos = Input.mousePosition;
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            if (transform.parent == null)
-            {
-                animate = false;
-                transform.SetParent(target.transform);
-            }
-            else
-            {
-                animate = true;
-                transform.SetParent(null);
-            }
-        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    if (transform.parent == null)
+        //    {
+        //        animate = false;
+        //        transform.SetParent(target.transform);
+        //    }
+        //    else
+        //    {
+        //        animate = true;
+        //        transform.SetParent(null);
+        //    }
+        //}
 
 
         if (Input.GetMouseButton(2))
