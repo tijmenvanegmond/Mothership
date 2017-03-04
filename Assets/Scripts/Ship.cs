@@ -7,38 +7,23 @@ using System;
 
 
 
-public class Ship : MonoBehaviour {
-    [Serializable]
-    public struct NamedGameObject
+public class Ship : MonoBehaviour
+{
+
+    Dictionary<string, GameObject> nodes;
+
+    public void Start()
     {
-        public string name;
-        public GameObject GO;
-    }
-    public NamedGameObject[] NamedGameObjectArray;
-    static Dictionary<string,GameObject> nodes = new Dictionary<string,GameObject>();
-    //public List<int[]> nodeConnections = new List<int[]>();
-
-
-
-    public void Awake()
-    {
-        if (nodes.Count == 0)
-        {
-            foreach (NamedGameObject namedGO in NamedGameObjectArray)
-            {
-                nodes.Add(namedGO.name, namedGO.GO);
-            }
-        }
+        nodes = NodeController.nodes;
     }
 
-    
-
-    public bool AddNode(GameObject collider, string type, int rotation = 0) {
+    public bool AddNode(GameObject collider, string type, int rotation = 0)
+    {
         GameObject port = Utility.FindParentWithTag(collider.gameObject, "Port");
         GameObject parentNode = Utility.FindParentWithTag(port, "Node");
         if (nodes.ContainsKey(type))
-        {    
-            GameObject node = Instantiate(nodes[type], transform) as GameObject;           
+        {
+            GameObject node = Instantiate(nodes[type], transform) as GameObject;
             node.transform.rotation = port.transform.rotation;
             node.transform.position = port.transform.position;
             if (type == "prisma" && !(parentNode.name == "prisma(Clone)" && (port.name == "Up" || port.name == "Down"))) //if its a prisma apply a diffrent rotation/translation; except when hovering over another triangle
@@ -48,14 +33,14 @@ public class Ship : MonoBehaviour {
             }
             else
             {
-                node.transform.Rotate(Vector3.right*90f); //no need to rotate since currently all nodes dont change on rotation
+                node.transform.Rotate(Vector3.right * 90f); //no need to rotate since currently all nodes dont change on rotation
                 node.transform.Translate(Vector3.back * .5f, Space.Self);
 
             }
             return true;
         }
         return false;
-       
-        
+
+
     }
 }

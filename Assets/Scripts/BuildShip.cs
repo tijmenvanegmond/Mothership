@@ -5,7 +5,6 @@ public class BuildShip : MonoBehaviour
 {
 
     public GameObject placementCursor;
-    public GameObject[] buildNodes;
     public enum nodeName
     {
         prisma = 1,
@@ -16,39 +15,44 @@ public class BuildShip : MonoBehaviour
     public float rotation90 = 0f;
     public float rotation120 = 0f;
 
-
-    private GameObject GetBuildNode()
-    {
-        return buildNodes[(int)selected];
-
-    }
     void Start()
     {
         selected = nodeName.prisma;
     }
-        // Update is called once per frame
-        void Update()
+
+    private void SetCursor(string nameOfNewCursor = null)
+    {
+        foreach (Transform child in placementCursor.transform)
+        {
+            // selected = nodeName(nameOfNewCursor);
+            if (nameOfNewCursor != null && child.gameObject.name == nameOfNewCursor)
+            {
+                child.gameObject.SetActive(true);
+            }
+            else
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
     {
         if (Input.GetButtonDown("Weapon1")) //then we use a prisma
         {
             selected = nodeName.prisma;
-            placementCursor.transform.FindChild("Prisma").gameObject.SetActive(true);
-            placementCursor.transform.FindChild("Cube").gameObject.SetActive(false);
-            placementCursor.transform.FindChild("Cylinder").gameObject.SetActive(false);
+            SetCursor("Prisma");
         }
         else if (Input.GetButtonDown("Weapon2")) //now we use a cube
         {
             selected = nodeName.cube;
-            placementCursor.transform.FindChild("Prisma").gameObject.SetActive(false);
-            placementCursor.transform.FindChild("Cube").gameObject.SetActive(true);            
-            placementCursor.transform.FindChild("Cylinder").gameObject.SetActive(false);
+            SetCursor("Cube");
         }
         else if (Input.GetButtonDown("Weapon3")) //now we use a cube
         {
             selected = nodeName.cylinder;
-            placementCursor.transform.FindChild("Prisma").gameObject.SetActive(false);
-            placementCursor.transform.FindChild("Cube").gameObject.SetActive(false);            
-            placementCursor.transform.FindChild("Cylinder").gameObject.SetActive(true);
+            SetCursor("Cylinder");
         }
 
         if (Input.GetButtonDown("Rotate")) //rotate parameter (720 still equals 360)
@@ -68,7 +72,7 @@ public class BuildShip : MonoBehaviour
                 GameObject ship = Utility.FindParentWithTag(hit.collider.gameObject, "Ship");
                 GameObject parentNode = Utility.FindParentWithTag(hit.collider.gameObject, "Node");
                 GameObject port = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
-                if (ship != null && parentNode != null && port !=null) //and its part of a node
+                if (ship != null && parentNode != null && port != null) //and its part of a node
                 {
                     if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delte node that was hit
                     {
@@ -82,7 +86,7 @@ public class BuildShip : MonoBehaviour
                         }
                         placementCursor.transform.rotation = port.transform.rotation;
                         placementCursor.transform.position = port.transform.position;
-                        if ( selected != nodeName.prisma|| hit.collider.name == "PlateTriangle") //if were not a triangle or if the trinagle is hovering over a prisma shaped port; apply a diffrent rotation
+                        if (selected != nodeName.prisma || hit.collider.name == "PlateTriangle") //if were not a triangle or if the trinagle is hovering over a prisma shaped port; apply a diffrent rotation
                         {
                             placementCursor.transform.Rotate(Vector3.right * 90f); //no need to rotate since currently all nodes dont change on rotation
                             placementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
@@ -97,9 +101,11 @@ public class BuildShip : MonoBehaviour
                     }
                 }
             }
-            else placementCursor.SetActive(false); 
+            else
+                placementCursor.SetActive(false);
         }
-        else placementCursor.SetActive(false);
+        else
+            placementCursor.SetActive(false);
     }
 }
 
