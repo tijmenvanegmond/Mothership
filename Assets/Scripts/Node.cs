@@ -7,6 +7,7 @@ public class Node : MonoBehaviour
    public bool rendered;
     public int id;    
     public int[] connections;
+    public Port[] conectionPorts;
     public string type = "node";
     public Vector3 localSpawnPos;
     public Quaternion localRotation = Quaternion.identity;

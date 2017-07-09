@@ -6,7 +6,7 @@ namespace Assets.Scripts
     {
         public GameObject PlacementCursor;
         public Cursor Cursor;
-        public NodeController.NodeName Selected = NodeController.NodeName.prisma;
+        public NodeName Selected = NodeName.prisma;
         public int Rotation = 0;
         private Ship _ship;
         private GameObject _node; //selected node to build on / delete
@@ -14,11 +14,11 @@ namespace Assets.Scripts
 
         void Start()
         {
-            Selected = NodeController.NodeName.prisma;
+            Selected = NodeName.prisma;
             Cursor = PlacementCursor.GetComponent<Cursor>();
         }
 
-        private void UpdateSelectedNode(NodeController.NodeName node)
+        private void UpdateSelectedNode(NodeName node)
         {
             Selected = node;
             Cursor.SetCursor(node);
@@ -28,19 +28,19 @@ namespace Assets.Scripts
         {
             if (Input.GetButtonDown("Weapon1")) //then we use a prisma
             {
-                UpdateSelectedNode(NodeController.NodeName.prisma);
+                UpdateSelectedNode(NodeName.prisma);
             }
             else if (Input.GetButtonDown("Weapon2")) //now we use a cube
             {
-                UpdateSelectedNode(NodeController.NodeName.cube);
+                UpdateSelectedNode(NodeName.cube);
             }
             else if (Input.GetButtonDown("Weapon3")) //now we use a cube
             {
-                UpdateSelectedNode(NodeController.NodeName.cylinder);
+                UpdateSelectedNode(NodeName.cylinder);
             }
             else if (Input.GetButtonDown("Weapon4")) //now we use a cube
             {
-                UpdateSelectedNode(NodeController.NodeName.slope);
+                UpdateSelectedNode(NodeName.slope);
             }
 
             if (Input.GetButtonDown("Rotate"))
@@ -55,14 +55,18 @@ namespace Assets.Scripts
                 Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
                 if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delete node that was hit
                     _ship.RemoveNode(_node);
-                else if (Input.GetButtonDown("Fire1") && Cursor.IsFree) // if left mouse button was pressed this update create a node
+                else if (Input.GetButtonDown("Fire1") && Cursor.IsFree
+                ) // if left mouse button was pressed this update create a node
                     _ship.AddNode(hit.collider.gameObject, Selected.ToString(), Rotation);
                 else
+                {
                     UpdateCursorPlacement(hit);
+                }
+
             }
             else
                 PlacementCursor.SetActive(false);
-            
+
         }
 
         private bool IsValidShipHit(RaycastHit hit)
@@ -81,27 +85,26 @@ namespace Assets.Scripts
             return _ship != null && _node != null && _port != null; //if nothing is null the hit is valid
         }
 
+        //TODO make dry with ship add node
         private void UpdateCursorPlacement(RaycastHit hit)
         {
-            PlacementCursor.transform.rotation = _port.transform.rotation;
             PlacementCursor.transform.position = _port.transform.position;
+            PlacementCursor.transform.rotation = _port.transform.rotation;
 
-            if (Selected == NodeController.NodeName.prisma && hit.collider.name == "PlateTriangle")
+            if (Selected == NodeName.prisma && hit.collider.name == "PlateTriangle")
             {
-                PlacementCursor.transform.Rotate(new Vector3(90f, Rotation * 120f,
-                    0));
-                PlacementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
+                PlacementCursor.transform.Translate(Vector3.up * .5f, Space.Self);
+                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 120f, 0));
             }
-            else if (Selected == NodeController.NodeName.prisma)
+            else if (Selected == NodeName.prisma)
             {
-                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 90f, 0));
                 PlacementCursor.transform.Translate(Vector3.up * .2887f, Space.Self);
+                PlacementCursor.transform.Rotate(new Vector3(-90f, Rotation * 90f, 0));
             }
             else
             {
-                PlacementCursor.transform.Rotate(new Vector3(90f, Rotation * 90f,
-                    0));
-                PlacementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
+                PlacementCursor.transform.Translate(Vector3.up * .5f, Space.Self);
+                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 90f, 0));
             }
             PlacementCursor.SetActive(true);
         }

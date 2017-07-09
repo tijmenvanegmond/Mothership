@@ -24,7 +24,7 @@ namespace Assets.Scripts
             IsOccupied = false;
         }
 
-        public void SetCursor(NodeController.NodeName newNode)
+        public void SetCursor(NodeName newNode)
         {
             SelectedInt = (int)newNode;
             string nodeName = newNode.ToString();

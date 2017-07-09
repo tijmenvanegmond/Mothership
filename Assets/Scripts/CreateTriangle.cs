@@ -7,6 +7,8 @@ public class CreateTriangle : MonoBehaviour {
 
     public bool Rendered = false;
     public bool Prisma = true;
+    public float Size = 1f;
+    public float Thickness = 0.1f;
     public float Height = 0.1f;
     private List<Vector3> _newVertices = new List<Vector3>();    
     private int[] _newTriangles = new int[24]{
@@ -38,12 +40,13 @@ public class CreateTriangle : MonoBehaviour {
             }
             else
             {
-                _newVertices.Add(new Vector3(-Height / 2f,  Height / 2f, Height / 2f));
-                _newVertices.Add(new Vector3(-Height / 2f, -Height / 2f, Height / 2f));
-                _newVertices.Add(new Vector3(-Height / 2f, -Height / 2f, -Height / 2f));
-                _newVertices.Add(new Vector3( Height / 2f,  Height / 2f, Height / 2f));
-                _newVertices.Add(new Vector3( Height / 2f, -Height / 2f, Height / 2f));
-                _newVertices.Add(new Vector3( Height / 2f, -Height / 2f, -Height / 2f));
+              
+                _newVertices.Add(new Vector3( Thickness / 2f,  Size / 2f, -Size / 2f));
+                _newVertices.Add(new Vector3( Thickness / 2f, -Size / 2f,  Size / 2f));
+                _newVertices.Add(new Vector3( Thickness / 2f, -Size / 2f, -Size / 2f));
+                _newVertices.Add(new Vector3(-Thickness / 2f,  Size / 2f, -Size / 2f));
+                _newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f,  Size / 2f));
+                _newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f, -Size / 2f));
             }
 
 

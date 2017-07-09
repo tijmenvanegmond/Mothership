@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NodeController : MonoBehaviour
+namespace Assets.Scripts
 {
     public enum NodeName
     {
@@ -13,24 +13,29 @@ public class NodeController : MonoBehaviour
         slope = 3
     }
 
-    [Serializable]
-    public struct NamedGameObject
+    public class NodeController : MonoBehaviour
     {
-        public string name;
-        public GameObject GO;
-    }
-    public NamedGameObject[] NamedGameObjectArray;
-    public static Dictionary<string, GameObject> nodes = new Dictionary<string, GameObject>();
+    
 
-
-
-    public void Awake()
-    {
-        if (nodes.Count == 0)
+        [Serializable]
+        public struct NamedGameObject
         {
-            foreach (NamedGameObject namedGO in NamedGameObjectArray)
+            public string name;
+            public GameObject GO;
+        }
+        public NamedGameObject[] NamedGameObjectArray;
+        public static Dictionary<string, GameObject> nodes = new Dictionary<string, GameObject>();
+
+
+
+        public void Awake()
+        {
+            if (nodes.Count == 0)
             {
-                nodes.Add(namedGO.name, namedGO.GO);
+                foreach (NamedGameObject namedGO in NamedGameObjectArray)
+                {
+                    nodes.Add(namedGO.name, namedGO.GO);
+                }
             }
         }
     }
