@@ -17,30 +17,46 @@ public class Ship : MonoBehaviour
         nodes = NodeController.nodes;
     }
 
-    public bool AddNode(GameObject collider, string type, int rotation = 0)
+    public bool AddNode(GameObject portCollider, string type, int rotation = 0)
     {
-        GameObject port = Utility.FindParentWithTag(collider.gameObject, "Port");
+        GameObject port = Utility.FindParentWithTag(portCollider.gameObject, "Port");
         GameObject parentNode = Utility.FindParentWithTag(port, "Node");
         if (nodes.ContainsKey(type))
         {
+            //disable current wall at that port
+            //portCollider.SetActive(false);
+            //place a new node at the port (as child of ship(this))
             GameObject node = Instantiate(nodes[type], transform) as GameObject;
             node.transform.rotation = port.transform.rotation;
             node.transform.position = port.transform.position;
-            if (type == "prisma" && !(parentNode.name == "prisma(Clone)" && (port.name == "Up" || port.name == "Down"))) //if its a prisma apply a diffrent rotation/translation; except when hovering over another triangle
+            if (type == "prisma" && portCollider.name == "PlateSquare")//!(parentNode.name == "prisma(Clone)" && (port.name == "Up" || port.name == "Down"))) //if its a prisma apply a diffrent rotation/translation; except when hovering over another triangle
             {
-                node.transform.Rotate(new Vector3(0, rotation, 0));
                 node.transform.Translate(Vector3.up * .2887f, Space.Self);
+                node.transform.Rotate(new Vector3(270f, 0, rotation * 90f));
             }
             else
             {
-                node.transform.Rotate(Vector3.right * 90f); //no need to rotate since currently all nodes dont change on rotation
-                node.transform.Translate(Vector3.back * .5f, Space.Self);
-
+                node.transform.Translate(Vector3.up * .5f, Space.Self);
+                if (type != "prisma")
+                {
+                    node.transform.Rotate(new Vector3(0, rotation * 90f, 0));
+                }
             }
+
+            //Utility.ChildrenSetActive(node, false);
+            //Utility.FindChild(node, "Down").SetActive(false);
+
             return true;
         }
         return false;
+    }
 
+    public void RemoveNode(GameObject node)
+    {
+        //GameObject port = Utility.FindParentWithTag(node.gameObject, "Port");
+        //GameObject parentNode = Utility.FindParentWithTag(port, "Node");
+
+        DestroyObject(node);
 
     }
 }

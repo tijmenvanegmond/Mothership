@@ -1,111 +1,110 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class BuildShip : MonoBehaviour
+namespace Assets.Scripts
 {
-
-    public GameObject placementCursor;
-    public enum nodeName
+    public class BuildShip : MonoBehaviour
     {
-        prisma = 1,
-        cube = 2,
-        cylinder = 3
-    }
-    public nodeName selected = nodeName.prisma;
-    public float rotation90 = 0f;
-    public float rotation120 = 0f;
+        public GameObject PlacementCursor;
+        public Cursor Cursor;
+        public NodeController.NodeName Selected = NodeController.NodeName.prisma;
+        public int Rotation = 0;
+        private Ship _ship;
+        private GameObject _node; //selected node to build on / delete
+        private GameObject _port; //selected port to build on / delete
 
-    void Start()
-    {
-        selected = nodeName.prisma;
-    }
-
-    private void SetCursor(string nameOfNewCursor = null)
-    {
-        foreach (Transform child in placementCursor.transform)
+        void Start()
         {
-            // selected = nodeName(nameOfNewCursor);
-            if (nameOfNewCursor != null && child.gameObject.name == nameOfNewCursor)
+            Selected = NodeController.NodeName.prisma;
+            Cursor = PlacementCursor.GetComponent<Cursor>();
+        }
+
+        private void UpdateSelectedNode(NodeController.NodeName node)
+        {
+            Selected = node;
+            Cursor.SetCursor(node);
+        }
+        // Update is called once per frame
+        void Update()
+        {
+            if (Input.GetButtonDown("Weapon1")) //then we use a prisma
             {
-                child.gameObject.SetActive(true);
+                UpdateSelectedNode(NodeController.NodeName.prisma);
+            }
+            else if (Input.GetButtonDown("Weapon2")) //now we use a cube
+            {
+                UpdateSelectedNode(NodeController.NodeName.cube);
+            }
+            else if (Input.GetButtonDown("Weapon3")) //now we use a cube
+            {
+                UpdateSelectedNode(NodeController.NodeName.cylinder);
+            }
+            else if (Input.GetButtonDown("Weapon4")) //now we use a cube
+            {
+                UpdateSelectedNode(NodeController.NodeName.slope);
+            }
+
+            if (Input.GetButtonDown("Rotate"))
+                Rotation++;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+
+            if (IsValidShipHit(hit))
+            {
+                Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
+                if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delete node that was hit
+                    _ship.RemoveNode(_node);
+                else if (Input.GetButtonDown("Fire1") && Cursor.IsFree) // if left mouse button was pressed this update create a node
+                    _ship.AddNode(hit.collider.gameObject, Selected.ToString(), Rotation);
+                else
+                    UpdateCursorPlacement(hit);
+            }
+            else
+                PlacementCursor.SetActive(false);
+            
+        }
+
+        private bool IsValidShipHit(RaycastHit hit)
+        {
+            if (hit.collider == null)
+                return false;
+
+            GameObject shipGameObject = Utility.FindParentWithTag(hit.collider.gameObject, "Ship");
+            if (shipGameObject == null)
+                return false;
+
+            _ship = shipGameObject.GetComponent<Ship>();
+            _node = Utility.FindParentWithTag(hit.collider.gameObject, "Node");
+            _port = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
+
+            return _ship != null && _node != null && _port != null; //if nothing is null the hit is valid
+        }
+
+        private void UpdateCursorPlacement(RaycastHit hit)
+        {
+            PlacementCursor.transform.rotation = _port.transform.rotation;
+            PlacementCursor.transform.position = _port.transform.position;
+
+            if (Selected == NodeController.NodeName.prisma && hit.collider.name == "PlateTriangle")
+            {
+                PlacementCursor.transform.Rotate(new Vector3(90f, Rotation * 120f,
+                    0));
+                PlacementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
+            }
+            else if (Selected == NodeController.NodeName.prisma)
+            {
+                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 90f, 0));
+                PlacementCursor.transform.Translate(Vector3.up * .2887f, Space.Self);
             }
             else
             {
-                child.gameObject.SetActive(false);
+                PlacementCursor.transform.Rotate(new Vector3(90f, Rotation * 90f,
+                    0));
+                PlacementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
             }
+            PlacementCursor.SetActive(true);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetButtonDown("Weapon1")) //then we use a prisma
-        {
-            selected = nodeName.prisma;
-            SetCursor("Prisma");
-        }
-        else if (Input.GetButtonDown("Weapon2")) //now we use a cube
-        {
-            selected = nodeName.cube;
-            SetCursor("Cube");
-        }
-        else if (Input.GetButtonDown("Weapon3")) //now we use a cube
-        {
-            selected = nodeName.cylinder;
-            SetCursor("Cylinder");
-        }
-
-        if (Input.GetButtonDown("Rotate")) //rotate parameter (720 still equals 360)
-        {
-            rotation90 += 90f;
-            rotation120 += 120f;
-        }
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
-            if (hit.collider != null) // if we hit somethning
-            {
-                GameObject ship = Utility.FindParentWithTag(hit.collider.gameObject, "Ship");
-                GameObject parentNode = Utility.FindParentWithTag(hit.collider.gameObject, "Node");
-                GameObject port = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
-                if (ship != null && parentNode != null && port != null) //and its part of a node
-                {
-                    if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delte node that was hit
-                    {
-                        DestroyObject(parentNode);
-                    }
-                    else
-                    {
-                        if (Input.GetButtonDown("Fire1")) // if left mouse button was pressed this update create a node
-                        {
-                            ship.GetComponent<Ship>().AddNode(hit.collider.gameObject, selected.ToString(), (int)rotation90);
-                        }
-                        placementCursor.transform.rotation = port.transform.rotation;
-                        placementCursor.transform.position = port.transform.position;
-                        if (selected != nodeName.prisma || hit.collider.name == "PlateTriangle") //if were not a triangle or if the trinagle is hovering over a prisma shaped port; apply a diffrent rotation
-                        {
-                            placementCursor.transform.Rotate(Vector3.right * 90f); //no need to rotate since currently all nodes dont change on rotation
-                            placementCursor.transform.Translate(Vector3.back * .5f, Space.Self);
-                        }
-                        else
-                        {
-                            placementCursor.transform.Rotate(new Vector3(0, rotation90, 0));
-                            placementCursor.transform.Translate(Vector3.up * .2887f, Space.Self);
-
-                        }
-                        placementCursor.SetActive(true);
-                    }
-                }
-            }
-            else
-                placementCursor.SetActive(false);
-        }
-        else
-            placementCursor.SetActive(false);
     }
 }
 

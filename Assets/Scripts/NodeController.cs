@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class NodeController : MonoBehaviour
 {
+    public enum NodeName
+    {
+        prisma = 0,
+        cube = 1,
+        cylinder = 2,
+        slope = 3
+    }
+
     [Serializable]
     public struct NamedGameObject
     {
@@ -26,5 +34,4 @@ public class NodeController : MonoBehaviour
             }
         }
     }
-
 }

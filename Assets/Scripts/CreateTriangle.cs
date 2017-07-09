@@ -5,10 +5,11 @@ using System.Collections.Generic;
 
 public class CreateTriangle : MonoBehaviour {
 
-    public bool rendered = false;
-    public float height = 0.1f;
-    private List<Vector3> newVertices = new List<Vector3>();    
-    private int[] newTriangles = new int[24]{
+    public bool Rendered = false;
+    public bool Prisma = true;
+    public float Height = 0.1f;
+    private List<Vector3> _newVertices = new List<Vector3>();    
+    private int[] _newTriangles = new int[24]{
             0, 1, 2,
             3, 5, 4,
 
@@ -22,24 +23,37 @@ public class CreateTriangle : MonoBehaviour {
             0, 2, 3,
         };
     //public Vector3[] normals  = new Vector3[6] {Vector3.forward, Vector3.forward, Vector3.forward, Vector3.back, Vector3.back, Vector3.back };
-   
+
     void Start() {
-        if (!rendered)
+        if (!Rendered)
         {
-            newVertices.Add(new Vector3(0, height/2f, 0.5773F));
-            newVertices.Add(new Vector3(.5f, height / 2f, -.2887f));
-            newVertices.Add(new Vector3(-.5f, height / 2f, -.2887f));
-            newVertices.Add(new Vector3(0, -height / 2f, 0.5773f));
-            newVertices.Add(new Vector3(.5f, -height / 2f, -.2887f));
-            newVertices.Add(new Vector3(-.5f, -height / 2f, -.2887f));
+            if (Prisma)
+            {
+                _newVertices.Add(new Vector3(0, Height / 2f, 0.5773F));
+                _newVertices.Add(new Vector3(.5f, Height / 2f, -.2887f));
+                _newVertices.Add(new Vector3(-.5f, Height / 2f, -.2887f));
+                _newVertices.Add(new Vector3(0, -Height / 2f, 0.5773f));
+                _newVertices.Add(new Vector3(.5f, -Height / 2f, -.2887f));
+                _newVertices.Add(new Vector3(-.5f, -Height / 2f, -.2887f));
+            }
+            else
+            {
+                _newVertices.Add(new Vector3(-Height / 2f,  Height / 2f, Height / 2f));
+                _newVertices.Add(new Vector3(-Height / 2f, -Height / 2f, Height / 2f));
+                _newVertices.Add(new Vector3(-Height / 2f, -Height / 2f, -Height / 2f));
+                _newVertices.Add(new Vector3( Height / 2f,  Height / 2f, Height / 2f));
+                _newVertices.Add(new Vector3( Height / 2f, -Height / 2f, Height / 2f));
+                _newVertices.Add(new Vector3( Height / 2f, -Height / 2f, -Height / 2f));
+            }
+
 
             Mesh mesh = new Mesh();
             GetComponent<MeshFilter>().mesh = mesh;
-            mesh.vertices = newVertices.ToArray();
+            mesh.vertices = _newVertices.ToArray();
             //mesh.normals = normals;
-            mesh.triangles = newTriangles;
+            mesh.triangles = _newTriangles;
             mesh.RecalculateNormals();
-            rendered = true;
+            Rendered = true;
             MeshCollider meshc = GetComponent(typeof(MeshCollider)) as MeshCollider;
             meshc.sharedMesh = mesh; // Give it your mesh here.
         }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Node : MonoBehaviour
 {   
-    public bool rendered;
+   public bool rendered;
     public int id;    
     public int[] connections;
     public string type = "node";

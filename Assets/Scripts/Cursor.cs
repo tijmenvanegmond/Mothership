@@ -1,44 +1,68 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Cursor : MonoBehaviour {
-
-    public Color freeColor = Color.green;
-    public Color occupiedColor = Color.red;
-    public int selectedInt = 0; 
-    public GameObject[] cursorObjects;
-    public GameObject selectedObject {
-        get { return cursorObjects[selectedInt]; }
-    }
-    private MeshCollider meshCol{
-        get { return selectedObject.GetComponent<MeshCollider>(); }
-    }       
-    private bool isTriggered = false;
-    public bool isOccupied {
-        get{ return isTriggered; }
-        private set{ isTriggered = value; }
-    }
-    public bool isFree{
-        get { return !isOccupied; }
-    }
-
-    // Use this for initialization
-    void Start () {
-        Debug.Log("sup");
-    }
-    void FixedUpdate() {
-        isOccupied = false;
-    }
-    void OnTriggerStay(Collider other)
+namespace Assets.Scripts
+{
+    public class Cursor : MonoBehaviour
     {
-        isOccupied = true;
-    }
+        public bool IsOccupied { get; private set; }
+        public bool IsFree{get { return !IsOccupied; }}
+        public Color FreeColor = Color.green;
+        public Color OccupiedColor = Color.red;
+        public int SelectedInt = 0;
+        public GameObject[] CursorObjects;
+        public GameObject SelectedObject
+        {
+            get { return CursorObjects[SelectedInt]; }
+        }
+        private MeshCollider MeshCol
+        {
+            get { return SelectedObject.GetComponent<MeshCollider>(); }
+        }
 
-    // Update is called once per frame
-    void Update () {       
-        if (isOccupied){
-            selectedObject.GetComponent<MeshRenderer>().sharedMaterial.color = occupiedColor;
-        } else selectedObject.GetComponent<MeshRenderer>().sharedMaterial.color = freeColor;
+        public Cursor()
+        {
+            IsOccupied = false;
+        }
+
+        public void SetCursor(NodeController.NodeName newNode)
+        {
+            SelectedInt = (int)newNode;
+            string nodeName = newNode.ToString();
+            foreach (GameObject child in CursorObjects)
+            {
+                if (nodeName != "" && child.name == nodeName)
+                {
+                    child.SetActive(true);
+                }
+                else
+                {
+                    child.SetActive(false);
+                }
+            }
+        }
+
+        void FixedUpdate()
+        {
+            IsOccupied = false;
+        }
+        void OnTriggerStay(Collider other)
+        {
+            IsOccupied = true;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (IsOccupied)
+            {
+                if (SelectedObject.tag == "Cursor")
+                    SelectedObject.GetComponent<MeshRenderer>().sharedMaterial.color = OccupiedColor;
+            }
+            else
+            {
+                if (SelectedObject.tag == "Cursor")
+                    SelectedObject.GetComponent<MeshRenderer>().sharedMaterial.color = FreeColor;
+            }
+        }
     }
 }
