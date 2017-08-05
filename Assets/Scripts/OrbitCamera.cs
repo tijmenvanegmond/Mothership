@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class OrbitCamera : MonoBehaviour {
+public class OrbitCamera : MonoBehaviour
+{
 
     public GameObject target;
     bool animate = true;
@@ -15,19 +16,19 @@ public class OrbitCamera : MonoBehaviour {
         mouseDelta = Vector3.ClampMagnitude(mouseDelta, 5f);
         previousMousePos = Input.mousePosition;
 
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    if (transform.parent == null)
-        //    {
-        //        animate = false;
-        //        transform.SetParent(target.transform);
-        //    }
-        //    else
-        //    {
-        //        animate = true;
-        //        transform.SetParent(null);
-        //    }
-        //}
+        if (Input.GetMouseButtonDown(4))
+        {
+            if (transform.parent == null)
+            {
+                animate = false;
+                transform.SetParent(target.transform);
+            }
+            else
+            {
+                animate = true;
+                transform.SetParent(null);
+            }
+        }
 
 
         if (Input.GetMouseButton(2))
@@ -41,7 +42,7 @@ public class OrbitCamera : MonoBehaviour {
             else
             {
                 //transform.RotateAround(target.transform.position, Vector3.left, mouseDelta.y * 200f * Time.deltaTime);
-                if (animate)transform.Translate(Vector3.down * mouseDelta.y * Time.deltaTime * 20);
+                if (animate) transform.Translate(Vector3.down * mouseDelta.y * Time.deltaTime * 20);
             }
 
             lastXdelta = mouseDelta.x * 50;
@@ -52,6 +53,6 @@ public class OrbitCamera : MonoBehaviour {
         }
         transform.Translate(Vector3.forward * Input.mouseScrollDelta.y * Time.deltaTime * 20);
 
-        if (animate)  transform.LookAt(target.transform.position);
+        if (animate) transform.LookAt(target.transform.position);
     }
 }
