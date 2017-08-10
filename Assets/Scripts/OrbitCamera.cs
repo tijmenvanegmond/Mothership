@@ -9,30 +9,32 @@ public class OrbitCamera : MonoBehaviour
     public float MinDistance = 3f;
     public float MaxDistance = 100f;
     public float Distance = 10f;
-    public Quaternion DefaultRotation = Quaternion.Euler(new Vector3(45f, 0, 0));
-    private Quaternion _addedRotation = Quaternion.identity;
-    private Vector3 _previousMousePos = Vector3.zero;
-    private float _lastXdelta = 0f;
+    public Quaternion StartRotation = Quaternion.Euler(new Vector3(45f, 0, 0));
+    private Quaternion _addedRotation =  Quaternion.Euler(new Vector3(45f, 0, 0));
+    private bool _cameraControlOn = false;
+
+    private void Start()
+    {
+        _addedRotation = StartRotation;
+    }
 
     void FixedUpdate()
     {
-        Vector3 mouseDelta = (Input.mousePosition - _previousMousePos) * Time.deltaTime;
-        mouseDelta = Vector3.ClampMagnitude(mouseDelta, 5f);
-        _previousMousePos = Input.mousePosition;
-        
-        if (Input.GetMouseButton(2))
-        {
+        Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"),Input.GetAxis("Mouse Y"));
+
+        if (Input.GetMouseButtonDown(2)) _cameraControlOn = !_cameraControlOn;
+        Cursor.visible = !_cameraControlOn;
+        if(_cameraControlOn){
+            
             if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
-            {
-                _addedRotation *= Quaternion.Euler(new Vector3(0,  mouseDelta.x * 200f * Time.deltaTime, 0));
-
-            }
-            else
-            {
-                _addedRotation *= Quaternion.Euler(new Vector3( mouseDelta.y * -200f * Time.deltaTime ,0f,  0f));
-            }
-
-            _lastXdelta = mouseDelta.x * 50;
+                {
+                    _addedRotation *= Quaternion.Euler(new Vector3(0,  mouseDelta.x * 200f * Time.deltaTime, 0));
+    
+                }
+                else
+                {
+                    _addedRotation *= Quaternion.Euler(new Vector3( mouseDelta.y * -200f * Time.deltaTime ,0f,  0f));
+                }
         }
         
         Distance -= Input.mouseScrollDelta.y * Time.deltaTime * 50;
@@ -43,7 +45,8 @@ public class OrbitCamera : MonoBehaviour
 
     void PlaceCameraWithRay()
     {
-        Vector3 cameraDirection = -(Target.transform.rotation*_addedRotation*DefaultRotation*Vector3.forward);
+        Quaternion totalRotation = _addedRotation; //*DefaultRotation * Target.transfrom.rotation;
+        Vector3 cameraDirection = -(totalRotation*Vector3.forward);
         Ray ray = new Ray(Target.transform.position+(cameraDirection * Distance),-cameraDirection);
 
         try
@@ -58,8 +61,8 @@ public class OrbitCamera : MonoBehaviour
         Debug.DrawRay(ray.origin,ray.direction);
         
         transform.position = ray.origin + ray.origin.normalized;
-        
-        transform.rotation = Target.transform.rotation*_addedRotation* DefaultRotation;
+
+        transform.rotation = totalRotation;
     }
 
     Ray GetPoinOfVisibilty(Ray ray)

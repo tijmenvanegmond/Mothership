@@ -3,7 +3,8 @@ using System.Collections;
 
 public class SpaceShipController : MonoBehaviour
 {
-
+    public GameObject Camera;
+    public float RotationSpeed = 1f;
     public Vector3 MovementMultiplier = Vector3.one;
     public Vector3 RotationMultiplier = Vector3.one;
     private Vector3 _movementInputVector;
@@ -22,7 +23,7 @@ public class SpaceShipController : MonoBehaviour
 
     void Update() // Update is called once per frame
     {
-        _movementInputVector = new Vector3(Input.GetAxis("ShipXAxis"), Input.GetAxis("ShipYAxis"), Input.GetAxis("ShipZAxis"));
+        _movementInputVector = new Vector3(Input.GetAxis("ShipXAxis"), Input.GetAxis("ShipYAxis"), Input.GetAxis("ShipThrottle"));
         _rotationInputVector = new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
 
         if (Input.GetKeyUp(KeyCode.X)) _isDampening = !_isDampening;
@@ -39,6 +40,17 @@ public class SpaceShipController : MonoBehaviour
             _rBody.drag = _drag;
             _rBody.angularDrag = _angularDrag;
         }
+        
+        //find the vector pointing from our position to the target
+        //Vector3 direction = (Camera.transform.position - transform.position).normalized;
+ 
+        //create the rotation we need to be in to look at the target
+        //Quaternion lookRotation = Quaternion.LookRotation(Camera.transform.rotation*Vector3.forward);
+ 
+        //rotate us over time according to speed until we are in the required rotation
+       // transform.rotation = Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.deltaTime * RotationSpeed);
+        _rBody.MoveRotation( Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.deltaTime * RotationSpeed));
+        
     }
 
     void FixedUpdate()
