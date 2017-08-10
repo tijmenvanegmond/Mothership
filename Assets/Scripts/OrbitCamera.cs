@@ -18,23 +18,35 @@ public class OrbitCamera : MonoBehaviour
         _addedRotation = StartRotation;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"),Input.GetAxis("Mouse Y"));
+        Vector3 rotationInputVector = new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
 
-        if (Input.GetMouseButtonDown(2)) _cameraControlOn = !_cameraControlOn;
+        if (Input.GetMouseButtonDown(2))
+        {
+            _cameraControlOn = !_cameraControlOn;
+            
+        }
         Cursor.visible = !_cameraControlOn;
         if(_cameraControlOn){
-            
+            Cursor.lockState = CursorLockMode.Locked;
             if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
-                {
-                    _addedRotation *= Quaternion.Euler(new Vector3(0,  mouseDelta.x * 200f * Time.deltaTime, 0));
-    
-                }
-                else
-                {
-                    _addedRotation *= Quaternion.Euler(new Vector3( mouseDelta.y * -200f * Time.deltaTime ,0f,  0f));
-                }
+            {
+                _addedRotation *= Quaternion.Euler(new Vector3(0,  mouseDelta.x * 200f * Time.deltaTime, 0));
+
+            }
+            else
+            {
+                _addedRotation *= Quaternion.Euler(new Vector3( mouseDelta.y * -200f * Time.deltaTime ,0,  0));
+            }
+            
+            
+            _addedRotation *= Quaternion.Euler(new Vector3(0,0,  rotationInputVector.z * -100f * Time.deltaTime));
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
         }
         
         Distance -= Input.mouseScrollDelta.y * Time.deltaTime * 50;

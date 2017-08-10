@@ -40,23 +40,13 @@ public class SpaceShipController : MonoBehaviour
             _rBody.drag = _drag;
             _rBody.angularDrag = _angularDrag;
         }
-        
-        //find the vector pointing from our position to the target
-        //Vector3 direction = (Camera.transform.position - transform.position).normalized;
- 
-        //create the rotation we need to be in to look at the target
-        //Quaternion lookRotation = Quaternion.LookRotation(Camera.transform.rotation*Vector3.forward);
- 
-        //rotate us over time according to speed until we are in the required rotation
-       // transform.rotation = Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.deltaTime * RotationSpeed);
-        _rBody.MoveRotation( Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.deltaTime * RotationSpeed));
-        
     }
 
     void FixedUpdate()
     {
+        _rBody.MoveRotation( Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.fixedDeltaTime * RotationSpeed));
         _rBody.AddRelativeForce(Vector3.Scale(_movementInputVector, MovementMultiplier) * Time.fixedDeltaTime);
-        _rBody.AddRelativeTorque(Vector3.Scale(_rotationInputVector, RotationMultiplier) * Time.fixedDeltaTime);
+        //_rBody.AddRelativeTorque(Vector3.Scale(_rotationInputVector, RotationMultiplier) * Time.fixedDeltaTime);
     }
 
     void OnGUI()
