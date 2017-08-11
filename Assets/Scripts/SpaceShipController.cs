@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using NUnit.Framework.Constraints;
 
 public class SpaceShipController : MonoBehaviour
 {
     public GameObject Camera;
+    public bool RotateWithCamera = true;
     public float RotationSpeed = 1f;
     public Vector3 MovementMultiplier = Vector3.one;
     public Vector3 RotationMultiplier = Vector3.one;
@@ -16,6 +18,8 @@ public class SpaceShipController : MonoBehaviour
 
     void Start() // Use this for initialization
     {
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
         _rBody = GetComponent<Rigidbody>();
         _drag = _rBody.drag;
         _angularDrag = _rBody.angularDrag;
@@ -27,11 +31,10 @@ public class SpaceShipController : MonoBehaviour
         _rotationInputVector = new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
 
         if (Input.GetKeyUp(KeyCode.X)) _isDampening = !_isDampening;
+        if (Input.GetMouseButtonUp(2)) RotateWithCamera = !RotateWithCamera;
         
         if (_isDampening)
         {
-            //_rBody.AddForce(Vector3.Scale(-_rBody.velocity.normalized, MovementMultiplier) * Time.fixedDeltaTime);
-            //_rBody.AddTorque(Vector3.Scale(-_rBody.angularVelocity.normalized, RotationMultiplier) * Time.fixedDeltaTime);
             _rBody.angularDrag = 1;
             _rBody.drag = 1;
         }
@@ -44,9 +47,12 @@ public class SpaceShipController : MonoBehaviour
 
     void FixedUpdate()
     {
-        _rBody.MoveRotation( Quaternion.Slerp(transform.rotation, Camera.transform.rotation, Time.fixedDeltaTime * RotationSpeed));
+        if (RotateWithCamera)
+        {
+            _rBody.MoveRotation(Quaternion.Slerp(transform.rotation, Camera.transform.rotation,
+                Time.fixedDeltaTime * RotationSpeed));
+        }
         _rBody.AddRelativeForce(Vector3.Scale(_movementInputVector, MovementMultiplier) * Time.fixedDeltaTime);
-        //_rBody.AddRelativeTorque(Vector3.Scale(_rotationInputVector, RotationMultiplier) * Time.fixedDeltaTime);
     }
 
     void OnGUI()
