@@ -11,35 +11,30 @@ public class OrbitCamera : MonoBehaviour
     public float Distance = 10f;
     public float OrbitSpeed = 160f;
     public float RollSpeed = 80f;
-    public Vector3 StartRotation = new Vector3(45f, 0, 0);
-    private Quaternion _totalRotation = Quaternion.identity;
-    private Vector3 _addedRotation = new Vector3(45f, 0, 0);
-    private Quaternion _addedRollRotation = Quaternion.identity;
+    //public Vector3 StartRotation = new Vector3(45f, 0, 0);
+    private Vector3 mouseRotation = Vector3.zero;
+    private Quaternion totalRotation = Quaternion.identity;
+    private Quaternion addedRollRotation = Quaternion.identity;
 
-    private void Start()
-    {
-        _addedRotation = StartRotation;
-    }
 
     void Update()
     {
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         Vector3 rotationInputVector =
             new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
-
-        _totalRotation *= Quaternion.Euler(new Vector3(0, 0, rotationInputVector.z * -100f * Time.deltaTime)); //roll
-        
         //orbit
         if (Mathf.Abs(mouseDelta.x) > Mathf.Abs(mouseDelta.y))
         {
-            _totalRotation *= Quaternion.Euler(new Vector3(0, mouseDelta.x * OrbitSpeed * Time.deltaTime, 0));
+            totalRotation *= Quaternion.Euler(new Vector3(0, mouseDelta.x * OrbitSpeed * Time.deltaTime, 0));
         }
         else
         {
-            _totalRotation *= Quaternion.Euler(new Vector3(mouseDelta.y * -OrbitSpeed * Time.deltaTime, 0, 0));
+            totalRotation *= Quaternion.Euler(new Vector3(mouseDelta.y * -OrbitSpeed * Time.deltaTime, 0, 0));
         }
         
-        _totalRotation *= Quaternion.Euler(new Vector3(0, 0, rotationInputVector.z * -RollSpeed * Time.deltaTime));
+        addedRollRotation = Quaternion.Euler(new Vector3(0, 0, rotationInputVector.z * -RollSpeed * Time.deltaTime));
+
+        totalRotation *= addedRollRotation;
         
         Distance -= Input.mouseScrollDelta.y * Time.deltaTime * 50;
         Distance = Mathf.Clamp(Distance, MinDistance, MaxDistance);
@@ -49,7 +44,7 @@ public class OrbitCamera : MonoBehaviour
 
     void PlaceCameraWithRay()
     {
-        Vector3 cameraDirection = -(_totalRotation * Vector3.forward);
+        Vector3 cameraDirection = -(totalRotation * Vector3.forward);
         Ray ray = new Ray(Target.transform.position + (cameraDirection * Distance), -cameraDirection);
 
         try
@@ -63,7 +58,7 @@ public class OrbitCamera : MonoBehaviour
 
         transform.position = ray.origin + (ray.direction * .5f);
 
-        transform.rotation = _totalRotation;
+        transform.rotation = totalRotation;
     }
     /// <summary>
     /// cast an ray an continues to cast it trought object until the target can been seen
