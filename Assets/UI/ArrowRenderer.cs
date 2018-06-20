@@ -11,14 +11,16 @@ public class ArrowRenderer : MonoBehaviour
 	public Material lineMaterial;
 	public float radius = .5f;
 	public float height = 1f;
-	//hardcoded 16 verts in the ring
-	float stepSize = (2f * Mathf.PI) / 16f;
-	Vector3[] vertices = new Vector3[17];
+	public int steps = 4;
+	public int lines = 4;
+	float stepSize;
+	Vector3[] vertices;
 
 	void Start()
 	{
 		lineMaterial.hideFlags = HideFlags.HideAndDontSave;
 		lineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+		vertices = new Vector3[steps+1];
 	}
 
 	// to simulate thickness, draw line as a quad scaled along the camera's vertical axis.
@@ -40,20 +42,14 @@ public class ArrowRenderer : MonoBehaviour
 		return gameObject.transform.TransformPoint(vec);
 	}
 
-	/*
-	████████       █  █  █▀▀▄  █▀▀▄  ▄▀▀▄  ▀▀█▀▀  █▀▀▀
-	████████       █  █  █▀▀   █  █  █■■█    █    █■■
-	████████       ▀▄▄▀  █     █▄▄▀  █  █    █    █▄▄▄
-	*/
-
 	void Update()
 	{
-		for (int i = 0; i < 16; i++)
+		float stepSize = (2f * Mathf.PI) / steps;
+		for (int i = 0; i < steps; i++)
 		{
 			vertices[i] = new Vector3(Mathf.Cos(stepSize * i) * radius, Mathf.Sin(stepSize * i) * radius, 0);
 		}
-
-		vertices[16] = Vector3.forward * height;
+		vertices[steps] = Vector3.forward * height;
 	}
 
 	void OnRenderObject()
@@ -63,15 +59,17 @@ public class ArrowRenderer : MonoBehaviour
 			lineMaterial.SetPass(0);
 			GL.Color(lineColor);
 			GL.Begin(GL.QUADS);
-			for (int i = 0; i < 15; i++)
+			for (int i = 0; i < steps-1; i++)
 			{
 				DrawQuad(to_world(vertices[i]), to_world(vertices[i + 1]));
 			}
-			DrawQuad(to_world(vertices[15]), to_world(vertices[0]));
-			DrawQuad(to_world(vertices[0]), to_world(vertices[16]));
-			DrawQuad(to_world(vertices[4]), to_world(vertices[16]));
-			DrawQuad(to_world(vertices[8]), to_world(vertices[16]));
-			DrawQuad(to_world(vertices[12]), to_world(vertices[16]));
+			DrawQuad(to_world(vertices[steps-1]), to_world(vertices[0]));
+
+			int bigStepSize = (steps - (steps % lines)) / lines;
+			for (int i = 0; i < lines; i++)
+			{
+				DrawQuad(to_world(vertices[i* bigStepSize]), to_world(vertices[steps]));
+			}
 
 			GL.End();
 		}
