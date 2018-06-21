@@ -55,7 +55,7 @@ namespace Assets.Scripts
         {
             //GameObject port = Utility.FindParentWithTag(node.gameObject, "Port");
             //GameObject parentNode = Utility.FindParentWithTag(port, "Node");
-            DestroyObject(node);
+            Destroy(node.gameObject);
         }
     }
 }

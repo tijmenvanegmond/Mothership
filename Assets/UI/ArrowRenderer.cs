@@ -1,6 +1,5 @@
 ﻿// from http://docs.unity3d.com/ScriptReference/GL-wireframe.html
 using UnityEngine;
-using System.Collections;
 
 public class ArrowRenderer : MonoBehaviour
 {

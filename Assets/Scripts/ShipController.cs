@@ -20,7 +20,7 @@ public class ShipController : MonoBehaviour
 	private bool isDampening = false;
 	private Rigidbody rBody;
 	//Max speed in m/s
-	//TODO: only used for arrow
+	//TODO: it's only used for V-arrow
 	private float maxSpeed = 50f;
 	private float drag;
 	private float angularDrag;
@@ -44,7 +44,7 @@ public class ShipController : MonoBehaviour
 		movementInputVector = new Vector3(Input.GetAxis("ShipXAxis"), Input.GetAxis("ShipYAxis"), Input.GetAxis("ShipThrottle"));
 		rotationInputVector = new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
 
-		if (Input.GetKeyUp(KeyCode.X)) isDampening = !isDampening;
+		if (Input.GetButtonUp("Dampening")) isDampening = !isDampening;
 		if (Input.GetMouseButtonUp(2)) RotateWithCamera = !RotateWithCamera;
 
 		if (isDampening)
@@ -59,15 +59,15 @@ public class ShipController : MonoBehaviour
 		}
 
 		//UI update
-		var speed = rBody.velocity.magnitude;
-		speedometerText.text = "Speed : " + (speed * 3.6f).ToString("0.0") + "km/h";
-		dampeningIndicatorText.text = isDampening ? "Dampening : ON" : "Dampening : OFF";
-		dampeningIndicatorText.color = isDampening ? Color.blue : Color.red;
-		//arrow ui
-		UIDirectionIndicator.transform.rotation = Quaternion.LookRotation(rBody.velocity);
-		var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
-		arrowRenderer.length = Mathf.Min(1f, arrowScalar*2f);
-		arrowRenderer.radius = Mathf.Min(.4f, arrowScalar*1.2f);
+			var speed = rBody.velocity.magnitude;
+			speedometerText.text = "Speed : " + (speed * 3.6f).ToString("0.0") + "km/h";
+			dampeningIndicatorText.text = isDampening ? "Dampening : ON" : "Dampening : OFF";
+			dampeningIndicatorText.color = isDampening ? Color.blue : Color.red;
+			//arrow ui
+			UIDirectionIndicator.transform.rotation = Quaternion.LookRotation(rBody.velocity);
+			var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
+			arrowRenderer.length = Mathf.Min(1f, arrowScalar*2f);
+			arrowRenderer.radius = Mathf.Min(.4f, arrowScalar*1.2f);
 	}
 
 	void FixedUpdate()
