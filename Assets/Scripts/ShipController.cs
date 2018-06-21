@@ -8,6 +8,7 @@ public class ShipController : MonoBehaviour
 	public GameObject UISpeedometer;
 	public GameObject UIDampeningIndicator;
 	public GameObject UIDirectionIndicator;
+	private ArrowRenderer arrowRenderer;
 	private Text speedometerText;
 	private Text dampeningIndicatorText;
 	public bool RotateWithCamera = true;
@@ -18,10 +19,13 @@ public class ShipController : MonoBehaviour
 	private Vector3 rotationInputVector;
 	private bool isDampening = false;
 	private Rigidbody rBody;
+	//Max speed in m/s
+	//TODO: only used for arrow
+	private float maxSpeed = 50f;
 	private float drag;
 	private float angularDrag;
 
-	void Start() // Use this for initialization
+	void Start()
 	{
 		//Cursor.visible = false;
 		//Cursor.lockState = CursorLockMode.Locked;
@@ -32,9 +36,10 @@ public class ShipController : MonoBehaviour
 		//Get UI components TODO: put UI code somewhere better
 		speedometerText = UISpeedometer.GetComponent<Text>();
 		dampeningIndicatorText = UIDampeningIndicator.GetComponent<Text>();
+		arrowRenderer = UIDirectionIndicator.GetComponent<ArrowRenderer>();
 	}
 
-	void Update() // Update is called once per frame
+	void Update()
 	{
 		movementInputVector = new Vector3(Input.GetAxis("ShipXAxis"), Input.GetAxis("ShipYAxis"), Input.GetAxis("ShipThrottle"));
 		rotationInputVector = new Vector3(Input.GetAxis("ShipPitch"), Input.GetAxis("ShipYaw"), Input.GetAxis("ShipRoll"));
@@ -54,10 +59,15 @@ public class ShipController : MonoBehaviour
 		}
 
 		//UI update
-		speedometerText.text = "Speed : " + (rBody.velocity.magnitude * 3.6f).ToString("0.0") + "km/h";
+		var speed = rBody.velocity.magnitude;
+		speedometerText.text = "Speed : " + (speed * 3.6f).ToString("0.0") + "km/h";
 		dampeningIndicatorText.text = isDampening ? "Dampening : ON" : "Dampening : OFF";
 		dampeningIndicatorText.color = isDampening ? Color.blue : Color.red;
+		//arrow ui
 		UIDirectionIndicator.transform.rotation = Quaternion.LookRotation(rBody.velocity);
+		var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
+		arrowRenderer.length = Mathf.Min(1f, arrowScalar*2f);
+		arrowRenderer.radius = Mathf.Min(.4f, arrowScalar*1.2f);
 	}
 
 	void FixedUpdate()
