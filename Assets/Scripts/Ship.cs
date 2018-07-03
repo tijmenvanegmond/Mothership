@@ -10,7 +10,7 @@ namespace Assets.Scripts
 
         public void Start()
         {
-            nodes = NodeController.nodes;
+            nodes = NodeController.Nodes;
         }
 
         public bool AddNode(GameObject portCollider, string type, int rotation = 0)

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Assets.Scripts
 {
@@ -15,8 +16,6 @@ namespace Assets.Scripts
 
     public class NodeController : MonoBehaviour
     {
-    
-
         [Serializable]
         public struct NamedGameObject
         {
@@ -24,19 +23,28 @@ namespace Assets.Scripts
             public GameObject GO;
         }
         public NamedGameObject[] NamedGameObjectArray;
-        public static Dictionary<string, GameObject> nodes = new Dictionary<string, GameObject>();
+		public List<Node> nodesList;
+		public List<ConnectionPointType> connectionPointTypes;
 
+		public static Dictionary<string, GameObject> Nodes = new Dictionary<string, GameObject>();
+		public static List<Node> NodeList;
+		public static List<ConnectionPointType> ConnectionPointTypeList;
 
-
-        public void Awake()
+		public void Awake()
         {
-            if (nodes.Count == 0)
+            if (Nodes.Count == 0)
             {
                 foreach (NamedGameObject namedGO in NamedGameObjectArray)
                 {
-                    nodes.Add(namedGO.name, namedGO.GO);
+                    Nodes.Add(namedGO.name, namedGO.GO);
                 }
             }
-        }
+
+			if (connectionPointTypes.GroupBy(x => x.ID).Any(z => z.Count() > 1))
+				throw new Exception("Not all ConnectionPointTypes have a unique id");
+
+			ConnectionPointTypeList = connectionPointTypes;
+
+		}
     }
 }
