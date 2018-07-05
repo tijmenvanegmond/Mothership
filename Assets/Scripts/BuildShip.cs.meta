@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: 9954c9e665a4a754581d09343ad3d191
-timeCreated: 1483791889
-licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Cursor: {fileID: 114291557520513100, guid: 608f6841739e10041955a5af5e04b7de, type: 2}
+  - SelectedNode: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -37,5 +37,25 @@ public class Utility : MonoBehaviour
         }
     }
 
-
+	/// <summary>
+	/// Changes the nodes transform so that both ports are connected
+	/// </summary>
+	/// <param name="from"></param>
+	/// <param name="target"></param>
+	/// <returns></returns>
+	public static GameObject ConnectPortToTarget(GameObject node,Transform port,Transform target)
+	{
+		var t = node.transform;
+		var pivot = new GameObject().transform;
+		t.rotation = Quaternion.identity;
+		t.position = Vector3.zero;
+		t.parent = pivot;
+		t.localRotation = Quaternion.Inverse(port.localRotation);
+		t.Translate(-port.localPosition, Space.Self);
+		pivot.transform.rotation = target.rotation * Quaternion.Euler(0, 0, 180f); //inverse rotation so port ar facing eachother
+		pivot.transform.position = target.position;
+		t.transform.parent = null;
+		Destroy(pivot.gameObject);
+		return node;
+	}
 }

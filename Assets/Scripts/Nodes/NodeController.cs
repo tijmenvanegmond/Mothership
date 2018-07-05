@@ -6,45 +6,39 @@ using System.Linq;
 
 namespace Assets.Scripts
 {
-    public enum NodeName
-    {
-        prisma = 0,
-        cube = 1,
-        cylinder = 2,
-        slope = 3
-    }
-
-    public class NodeController : MonoBehaviour
-    {
-        [Serializable]
-        public struct NamedGameObject
-        {
-            public string name;
-            public GameObject GO;
-        }
-        public NamedGameObject[] NamedGameObjectArray;
-		public List<Node> nodesList;
+	public class NodeController : MonoBehaviour
+	{
+		public List<Node> nodeList;
 		public List<ConnectionPointType> connectionPointTypes;
 
-		public static Dictionary<string, GameObject> Nodes = new Dictionary<string, GameObject>();
-		public static List<Node> NodeList;
-		public static List<ConnectionPointType> ConnectionPointTypeList;
+		public static Dictionary<int, Node> NodeDict { get; private set; }
+		public static Dictionary<int, ConnectionPointType> PortTypeDict { get; private set; }
 
 		public void Awake()
-        {
-            if (Nodes.Count == 0)
-            {
-                foreach (NamedGameObject namedGO in NamedGameObjectArray)
-                {
-                    Nodes.Add(namedGO.name, namedGO.GO);
-                }
-            }
+		{
+			//Load Nodes
+			if (nodeList.GroupBy(x => x.ID).Any(g => g.Count() > 1))
+				throw new Exception("All nodes must have a unique ID");
 
-			if (connectionPointTypes.GroupBy(x => x.ID).Any(z => z.Count() > 1))
+			if (nodeList.Any(x => x.Name == null))
+				throw new Exception("All nodes must have a name");
+
+			if (nodeList.GroupBy(x => x.Name).Any(g => g.Count() > 1))
+				throw new Exception("All nodes must have a unique name");
+
+			NodeDict = new Dictionary<int, Node>();
+
+			foreach (var node in nodeList)
+				NodeDict.Add(node.ID, node);
+
+			//Load connectionpointTypes/portTypes
+			if (connectionPointTypes.GroupBy(x => x.ID).Any(g => g.Count() > 1))
 				throw new Exception("Not all ConnectionPointTypes have a unique id");
 
-			ConnectionPointTypeList = connectionPointTypes;
+			PortTypeDict = new Dictionary<int, ConnectionPointType>();
 
+			foreach (var portType in connectionPointTypes)
+				PortTypeDict.Add(portType.ID, portType);
 		}
-    }
+	}
 }

@@ -8,5 +8,4 @@ public struct ConnectionPointType {
 	public int ID;
 	public string Name;
 	public float RotationStep;
-	public Panel DefaultPanel;
 }

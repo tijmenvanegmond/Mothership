@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class ShipController : MonoBehaviour
 {
+	//UI
 	public GameObject Camera;
 	public GameObject UISpeedometer;
 	public GameObject UIDampeningIndicator;
@@ -11,6 +12,7 @@ public class ShipController : MonoBehaviour
 	private ArrowRenderer arrowRenderer;
 	private Text speedometerText;
 	private Text dampeningIndicatorText;
+
 	public bool RotateWithCamera = true;
 	public float RotationSpeed = 1f;
 	public Vector3 MovementMultiplier = Vector3.one;

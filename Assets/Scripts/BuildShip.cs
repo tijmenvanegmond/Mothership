@@ -1,113 +1,174 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class BuildShip : MonoBehaviour
-    {
-        public GameObject PlacementCursor;
-        public Cursor Cursor;
-        public NodeName Selected = NodeName.prisma;
-        public int Rotation = 0;
-        private Ship _ship;
-        private GameObject _node; //selected node to build on / delete
-        private GameObject _port; //selected port to build on / delete
+	public class BuildShip : MonoBehaviour
+	{
+		private Node selectedNode;
+		public int Rotation = 0;
+		public int PortNumber = 0;
 
-        void Start()
-        {
-            Selected = NodeName.prisma;
-            Cursor = PlacementCursor.GetComponent<Cursor>();
-        }
+		private IDictionary<int, Node> nodes;
+		private IDictionary<int, ConnectionPointType> portTypes;
 
-        private void UpdateSelectedNode(NodeName node)
-        {
-            Selected = node;
-            Cursor.SetCursor(node);
-        }
-        // Update is called once per frame
-        void Update()
-        {
-            if (Input.GetButtonDown("Weapon1")) //then we use a prisma
-            {
-                UpdateSelectedNode(NodeName.prisma);
-            }
-            else if (Input.GetButtonDown("Weapon2")) //now we use a cube
-            {
-                UpdateSelectedNode(NodeName.cube);
-            }
-            else if (Input.GetButtonDown("Weapon3")) //now we use a cube
-            {
-                UpdateSelectedNode(NodeName.cylinder);
-            }
-            else if (Input.GetButtonDown("Weapon4")) //now we use a cube
-            {
-                UpdateSelectedNode(NodeName.slope);
-            }
+		private GameObject CursorGO;
 
-            if (Input.GetButtonDown("Rotate"))
-                Rotation++;
+		private Ship hitShip;
+		private Node hitNode; //selected node to build on / delete
+		private ConnectionPoint hitPort; //selected port to build on / delete
+		private ConnectionPointType hitPortType { get { return portTypes[hitPort.TypeID]; } }
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
+		void Start()
+		{
+			nodes = NodeController.NodeDict;
+			portTypes = NodeController.PortTypeDict;
 
-            if (IsValidShipHit(hit))
-            {
-                Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
-                if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delete node that was hit
-                    _ship.RemoveNode(_node);
-                else if (Input.GetButtonDown("Fire1") && Cursor.IsFree
-                ) // if left mouse button was pressed this update create a node
-                    _ship.AddNode(hit.collider.gameObject, Selected.ToString(), Rotation);
-                else
-                {
-                    UpdateCursorPlacement(hit);
-                }
+			UpdateCursorShape(1);
+		}
 
-            }
-            else
-                PlacementCursor.SetActive(false);
+		//Update inputs once per frame
+		void Update()
+		{
+			if (Input.GetButtonDown("Weapon1")) //then we use a prisma
+			{
+				UpdateCursorShape(0);
+			}
+			else if (Input.GetButtonDown("Weapon2")) //now we use a cube
+			{
+				UpdateCursorShape(1);
+			}
+			else if (Input.GetButtonDown("Weapon3")) //now we use a cube
+			{
+				UpdateCursorShape(2);
+			}
+			else if (Input.GetButtonDown("Weapon4")) //now we use a cube
+			{
+				UpdateCursorShape(3);
+			}
+			else if (Input.GetButtonDown("Weapon5")) //now we use a cube
+			{
+				UpdateCursorShape(4);
+			}
+			else if (Input.GetButtonDown("Weapon6")) //now we use a cube
+			{
+				UpdateCursorShape(4);
+			}
+			else if (Input.GetButtonDown("Weapon7")) //now we use a cube
+			{
+				UpdateCursorShape(4);
+			}
 
-        }
+			if (Input.GetButtonDown("Rotate"))
+				Rotation++;
 
-        private bool IsValidShipHit(RaycastHit hit)
-        {
-            if (hit.collider == null)
-                return false;
+			if (Input.GetButtonDown("SwitchPort"))
+				PortNumber++;
+		}
 
-            GameObject shipGameObject = Utility.FindParentWithTag(hit.collider.gameObject, "Ship");
-            if (shipGameObject == null)
-                return false;
+		void UpdateCursorShape(int nodeID)
+		{
+			selectedNode = nodes[nodeID];
 
-            _ship = shipGameObject.GetComponent<Ship>();
-            _node = Utility.FindParentWithTag(hit.collider.gameObject, "Node");
-            _port = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
+			if (CursorGO != null)
+				Destroy(CursorGO);
 
-            return _ship != null && _node != null && _port != null; //if nothing is null the hit is valid
-        }
+			CursorGO = Instantiate(selectedNode.BuildPreviewCollider);
+			CursorGO.AddComponent<Cursor>();
+			CursorGO.SetActive(false);
+		}
 
-        //TODO make dry with ship add node
-        private void UpdateCursorPlacement(RaycastHit hit)
-        {
-            PlacementCursor.transform.position = _port.transform.position;
-            PlacementCursor.transform.rotation = _port.transform.rotation;
+		void FixedUpdate()
+		{
+			var layerMask = LayerMask.GetMask("Building");
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
+			Physics.Raycast(ray, out hit, layerMask);
 
-            if (Selected == NodeName.prisma && hit.collider.name == "PlateTriangle")
-            {
-                PlacementCursor.transform.Translate(Vector3.up * .5f, Space.Self);
-                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 120f, 0));
-            }
-            else if (Selected == NodeName.prisma)
-            {
-                PlacementCursor.transform.Translate(Vector3.up * .2887f, Space.Self);
-                PlacementCursor.transform.Rotate(new Vector3(-90f, Rotation * 90f, 0));
-            }
-            else
-            {
-                PlacementCursor.transform.Translate(Vector3.up * .5f, Space.Self);
-                PlacementCursor.transform.Rotate(new Vector3(0, Rotation * 90f, 0));
-            }
-            PlacementCursor.SetActive(true);
-        }
-    }
+			//make sure there are no nulls
+			if (!IsValidShipHit(hit))//only continue if a viable (with port & ship parent) collider has been hit
+			{
+				CursorGO.SetActive(false);
+				return;
+			}
+
+			if (!selectedNode.HasPortOfType(hitPort.TypeID))
+			{
+				Debug.Log("SelectedNode does not have a port of a matching type");
+				CursorGO.SetActive(false);
+				return;
+			}
+
+			//now assumed there are no nulls
+			Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
+			if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delete node that was hit
+				hitShip.RemoveNode(hitNode.gameObject);
+			else if (Input.GetButtonDown("Fire1")) // if left mouse button was pressed this update create a node
+			{
+				if (CursorGO.GetComponent<Cursor>().IsFree)
+					hitShip.AddNode(hitNode, hitPort.Index, selectedNode, GetSelectedPort().Index, Rotation);
+				else
+					Debug.Log("Object:" + CursorGO.GetComponent<Cursor>().Obstruction + "\n Is obstucting");
+			}
+			else
+			{
+				UpdateCursorPlacement();
+			}
+		}
+
+		private bool IsValidShipHit(RaycastHit hit)
+		{
+			if (hit.collider == null)
+				return false;
+			GameObject shipGameObject = Utility.FindParentWithTag(hit.collider.gameObject, "Ship");
+			if (shipGameObject == null)
+				return false;
+			hitShip = shipGameObject.GetComponent<Ship>();
+			if (hitShip == null)
+				return false;
+			hitNode = Utility.FindParentWithTag(hit.collider.gameObject, "Node").GetComponent<Node>();
+			if (hitNode == null)
+				return false;
+			var portGO = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
+			if (portGO == null)
+				return false;
+			if (!hitNode.HasMatchingPort(portGO))
+			{
+				Debug.Log("Could not match portGO to port");
+				return false;
+			}
+			hitPort = hitNode.GetMatchingPort(portGO);
+
+			return true;
+		}
+
+		//TODO fix rotation (prisma)
+		private void UpdateCursorPlacement()
+		{
+			//Calc node placement postion based on portPostions
+			var newPort= GetSelectedPort();
+			//var target = hitPort.Transform.rotation * Quaternion.Euler(0, 0, 180f);  //inverse of hitport
+			//Debug.DrawLine(hitPort.Transform.position, hitPort.Transform.position + (target * Vector3.up), Color.yellow, 1f);
+
+			Utility.ConnectPortToTarget(CursorGO, newPort.Transform, hitPort.Transform);
+			CursorGO.transform.Rotate(newPort.Transform.localPosition, Rotation * hitPortType.RotationStep, Space.Self); //Rotate among port axis by (player)custom rotation
+
+			CursorGO.gameObject.SetActive(true);
+		}
+
+		/// <summary>
+		/// get info of the current selected port of the selectednode (breaks on no matching porttypes)
+		/// </summary>
+		/// <returns></returns>
+		private ConnectionPoint GetSelectedPort()
+		{
+			var matchingPorts = selectedNode.GetPortsOfType(hitPortType.ID);
+			var amount = matchingPorts.Count();
+			return matchingPorts.ElementAt(PortNumber % amount);
+		}
+
+	}
 }
 

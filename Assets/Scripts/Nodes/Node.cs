@@ -9,43 +9,66 @@ public abstract class ShipPart : MonoBehaviour
 
 public class Node : ShipPart
 {
-	public bool rendered;
-	public int id;
-	public ConnectionPoint[] ConnectionPoints;
-	public Mesh PreviewMesh;
+	public int ID;
+	public string Name;
+	[HideInInspector]
+	public bool Rendered;
+	//Gameobject
+	public GameObject BuildPreviewCollider;
+	[SerializeField]
+	private ConnectionPoint[] portCollection;
+
+	public virtual ConnectionPoint GetConnectionPoint(int connectionNumber)
+	{
+		return portCollection[connectionNumber];
+	}
+
+	public virtual int GetConnectionPointID(GameObject portGO)
+	{
+		for (int i = 0; i < portCollection.Length; i++)
+		{
+			if (portCollection[i].Transform.gameObject == portGO)
+				return i;
+		}
+		return 0;
+	}
 
 	public virtual Vector3 GetConnectionPos(int connectionNumber)
 	{
-		return ConnectionPoints[connectionNumber].Transform.position;
+		return portCollection[connectionNumber].Transform.position;
 	}
 
-	//public virtual Vector3 GetPosConnected(int id)
-	//{
-	//	for (int i = 0; i < ConnectionPoints.Length; i++)
-	//	{
-	//		if (ConnectionPoints[i].Connection == id)
-	//		{
-	//			return GetConnectionPos(i);
-	//		}
-	//	}
-	//	return Vector3.zero;
-	//}
+	public bool HasPortOfType(int typeID)
+	{
 
-	public override bool Equals(object obj)
-	{
-		//Check for null and compare run-time types.
-		if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-		{
-			return false;
-		}
-		else
-		{
-			Node i = (Node)obj;
-			return id == i.id;
-		}
+		return portCollection.Any(x => x.TypeID == typeID);
 	}
-	public override int GetHashCode()
+
+	public bool HasMatchingPort(GameObject portGO)
 	{
-		return id.GetHashCode();
+		return portCollection.Any(x => x.Transform.gameObject == portGO);
+	}
+
+	public ConnectionPoint GetMatchingPort(GameObject portGO)
+	{
+		return portCollection.First(x => x.Transform.gameObject == portGO);
+	}
+
+	public IEnumerable<ConnectionPoint> GetPortsOfType(int id)
+	{
+		return portCollection.Where(x => x.TypeID == id);
+	}
+
+	public void Start() //TODO: default portbuildcollider system
+	{
+		//var portBuildCollider = new SphereCollider();
+		//portBuildCollider.radius = .3f;
+		//portBuildCollider.gameObject.layer = LayerMask.NameToLayer("Building");
+
+		//foreach (var port in ports)
+		//{
+		//	var portGO=Instantiate(portBuildCollider.gameObject, port.Transform);
+		//	portGO.transform.localPosition = Vector3.zero;
+		//}
 	}
 }
