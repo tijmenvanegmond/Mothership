@@ -82,7 +82,7 @@ namespace Assets.Scripts
 
 		void FixedUpdate()
 		{
-			var layerMask = LayerMask.GetMask("Building");
+			var layerMask = NodeController.BuildMask;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
 			Physics.Raycast(ray, out hit, layerMask);
@@ -107,8 +107,14 @@ namespace Assets.Scripts
 				hitShip.RemoveNode(hitNode.gameObject);
 			else if (Input.GetButtonDown("Fire1")) // if left mouse button was pressed this update create a node
 			{
+				UpdateCursorPlacement();
 				if (CursorGO.GetComponent<Cursor>().IsFree)
-					hitShip.AddNode(hitNode, hitPort.Index, selectedNode, GetSelectedPort().Index, Rotation);
+				{
+					var nodeGO = Instantiate(selectedNode.gameObject, hitShip.transform);
+					nodeGO.transform.position = CursorGO.transform.position;
+					nodeGO.transform.rotation = CursorGO.transform.rotation;
+					hitShip.AddNode(nodeGO);
+				}
 				else
 					Debug.Log("Object:" + CursorGO.GetComponent<Cursor>().Obstruction + "\n Is obstucting");
 			}
@@ -144,19 +150,49 @@ namespace Assets.Scripts
 			return true;
 		}
 
-		//TODO fix rotation (prisma)
 		private void UpdateCursorPlacement()
 		{
 			//Calc node placement postion based on portPostions
-			var newPort= GetSelectedPort();
-			//var target = hitPort.Transform.rotation * Quaternion.Euler(0, 0, 180f);  //inverse of hitport
-			//Debug.DrawLine(hitPort.Transform.position, hitPort.Transform.position + (target * Vector3.up), Color.yellow, 1f);
+			var newPort = GetSelectedPort();
+			//ConnectPortToTarget(CursorGO, newPort.Transform, hitPort.Transform);
+			var t = CursorGO.transform;
+			var pivot = new GameObject().transform;
+			t.rotation = Quaternion.identity;
+			t.position = Vector3.zero;
+			t.parent = pivot;
+			t.localRotation = Quaternion.Inverse(newPort.Transform.localRotation);
+			t.Translate(-newPort.Transform.localPosition, Space.Self);
+			pivot.transform.rotation = hitPort.Transform.rotation * Quaternion.Euler(0, 0, 180f); //inverse rotation so port ar facing eachother
+			pivot.transform.position = hitPort.Transform.position;
+			t.transform.parent = null;
+			Destroy(pivot.gameObject);
 
-			Utility.ConnectPortToTarget(CursorGO, newPort.Transform, hitPort.Transform);
-			CursorGO.transform.Rotate(newPort.Transform.localPosition, Rotation * hitPortType.RotationStep, Space.Self); //Rotate among port axis by (player)custom rotation
-
+			CursorGO.transform.RotateAround(hitPort.Transform.position, hitPort.Transform.rotation * Vector3.up, Rotation * hitPortType.RotationStep);
 			CursorGO.gameObject.SetActive(true);
 		}
+
+		/// <summary>
+		/// Changes the nodes transform so that both ports are connected
+		/// </summary>
+		/// <param name="from"></param>
+		/// <param name="target"></param>
+		/// <returns></returns>
+		public static GameObject ConnectPortToTarget(GameObject node, Transform port, Transform target)
+		{
+			var t = node.transform;
+			var pivot = new GameObject().transform;
+			t.rotation = Quaternion.identity;
+			t.position = Vector3.zero;
+			t.parent = pivot;
+			t.localRotation = Quaternion.Inverse(port.localRotation);
+			t.Translate(-port.localPosition, Space.Self);
+			pivot.transform.rotation = target.rotation * Quaternion.Euler(0, 0, 180f); //inverse rotation so port ar facing eachother
+			pivot.transform.position = target.position;
+			t.transform.parent = null;
+			Destroy(pivot.gameObject);
+			return node;
+		}
+
 
 		/// <summary>
 		/// get info of the current selected port of the selectednode (breaks on no matching porttypes)

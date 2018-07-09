@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using Assets.Scripts;
 
 public abstract class ShipPart : MonoBehaviour
 {
@@ -18,29 +20,8 @@ public class Node : ShipPart
 	[SerializeField]
 	private ConnectionPoint[] portCollection;
 
-	public virtual ConnectionPoint GetConnectionPoint(int connectionNumber)
-	{
-		return portCollection[connectionNumber];
-	}
-
-	public virtual int GetConnectionPointID(GameObject portGO)
-	{
-		for (int i = 0; i < portCollection.Length; i++)
-		{
-			if (portCollection[i].Transform.gameObject == portGO)
-				return i;
-		}
-		return 0;
-	}
-
-	public virtual Vector3 GetConnectionPos(int connectionNumber)
-	{
-		return portCollection[connectionNumber].Transform.position;
-	}
-
 	public bool HasPortOfType(int typeID)
 	{
-
 		return portCollection.Any(x => x.TypeID == typeID);
 	}
 
@@ -59,16 +40,57 @@ public class Node : ShipPart
 		return portCollection.Where(x => x.TypeID == id);
 	}
 
-	public void Start() //TODO: default portbuildcollider system
+	public void Start()
 	{
-		//var portBuildCollider = new SphereCollider();
-		//portBuildCollider.radius = .3f;
-		//portBuildCollider.gameObject.layer = LayerMask.NameToLayer("Building");
+		//Add a default portBuildCollider to each port (of node)
+		var defaultPortColliderGO = new GameObject();
+		var defaultPortBuildCollider = defaultPortColliderGO.AddComponent<BoxCollider>() as BoxCollider;
+		defaultPortBuildCollider.center = new Vector3(0, .02f,0);
+		defaultPortBuildCollider.size = new Vector3(.5f, .04f, .5f);
+		defaultPortColliderGO.layer = NodeController.BuildLayer;
+		defaultPortColliderGO.name = "portBuildCollider";
 
-		//foreach (var port in ports)
-		//{
-		//	var portGO=Instantiate(portBuildCollider.gameObject, port.Transform);
-		//	portGO.transform.localPosition = Vector3.zero;
-		//}
+		foreach (var port in portCollection)
+		{
+			if (port.Transform.childCount != 0)
+				continue;
+			var portGO = Instantiate(defaultPortColliderGO, port.Transform);
+			portGO.transform.localPosition = Vector3.zero;
+		}
 	}
+
+	/// <summary>
+	/// Casts a overlap sphere for each connection to see if it there is a port of the same type close enough
+	/// </summary>
+	/// <returns></returns>
+	internal bool HasViableConnections() //TODO: implement required connections
+	{
+		var hitColliders = new Collider[10];
+		foreach (var port in portCollection)
+		{
+			var amount = Physics.OverlapSphereNonAlloc(port.Transform.position, .01f, hitColliders, NodeController.BuildMask);
+			for (var i = 0; i < amount; i++)
+			{
+				var hitCollider = hitColliders[i];
+				var hitNodeGO = Utility.FindParentWithTag(hitCollider.gameObject, "Node");
+				if (hitNodeGO == null)
+					continue;
+
+				var hitNode = hitNodeGO.GetComponent<Node>();
+				var hitPortInfo = hitNode.GetMatchingPort(hitCollider.gameObject);
+				if (port.TypeID != hitPortInfo.TypeID)
+					continue;
+				if (hitPortInfo.Connection != null)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	internal void ConnectPorts()
+	{
+		throw new NotImplementedException();
+	}
+
 }

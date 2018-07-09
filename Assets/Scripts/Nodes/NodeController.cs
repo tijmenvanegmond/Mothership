@@ -13,9 +13,14 @@ namespace Assets.Scripts
 
 		public static Dictionary<int, Node> NodeDict { get; private set; }
 		public static Dictionary<int, ConnectionPointType> PortTypeDict { get; private set; }
+		public static int BuildMask;
+		public static int BuildLayer;
 
 		public void Awake()
 		{
+			BuildMask = LayerMask.GetMask("Building");
+			BuildLayer = LayerMask.NameToLayer("Building");
+
 			//Load Nodes
 			if (nodeList.GroupBy(x => x.ID).Any(g => g.Count() > 1))
 				throw new Exception("All nodes must have a unique ID");

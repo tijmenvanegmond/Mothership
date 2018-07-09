@@ -13,26 +13,32 @@ namespace Assets.Scripts
 			nodes = NodeController.NodeDict;
 		}
 
-		public bool AddNode(Node baseNode, int baseNodePortNumber, Node newNode, int newNodePortNumber, int rotation = 0)
+		public bool AddNode(GameObject newNode)
 		{
-			var basePort = baseNode.GetConnectionPoint(baseNodePortNumber);
-			var newPort = newNode.GetConnectionPoint(newNodePortNumber);
-			var newPortType = NodeController.PortTypeDict[newPort.TypeID];
+			var nodeComponent = newNode.GetComponent<Node>();
+			if (nodeComponent == null)
+				return false;
+			return AddNode(nodeComponent);
+		}
 
-			//TODO: checknodeplacement legit
-			//return false
-			//Placenode
-			//Calc node placement postion based on portPostions TODO: fix rotation/translation issues
-			var newNodeGO = Instantiate(newNode.gameObject) as GameObject;
-			Utility.ConnectPortToTarget(newNodeGO, newPort.Transform, basePort.Transform);
-			newNodeGO.transform.Rotate(newPort.Transform.localPosition, rotation * newPortType.RotationStep, Space.Self); //Rotate among port axis by (player)custom rotation
-			newNodeGO.transform.parent = transform;
+		public bool AddNode(Node newNode)
+		{
+			var newNodeGO = newNode.gameObject;
 
+			//TODO: check node placement legit
+			if (newNodeGO.transform.parent != gameObject)
+				return false;
+
+			if (!newNode.HasViableConnections())
+				return false;
+
+			newNode.ConnectPorts();
 			return true;
 		}
 
 		public void RemoveNode(GameObject node)
 		{
+			//node.DisconnetPorts();
 			//GameObject port = Utility.FindParentWithTag(node.gameObject, "Port");
 			//GameObject parentNode = Utility.FindParentWithTag(port, "Node");
 			Destroy(node.gameObject);
