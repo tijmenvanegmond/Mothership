@@ -10,6 +10,7 @@ namespace Assets.Scripts
 		private Node selectedNode;
 		public int Rotation = 0;
 		public int PortNumber = 0;
+		public int SelectedNodeID = 0;
 
 		private IDictionary<int, Node> nodes;
 		private IDictionary<int, ConnectionPointType> portTypes;
@@ -26,40 +27,32 @@ namespace Assets.Scripts
 			nodes = NodeController.NodeDict;
 			portTypes = NodeController.PortTypeDict;
 
-			UpdateCursorShape(1);
+			UpdateCursorShape(0);
 		}
 
 		//Update inputs once per frame
 		void Update()
 		{
-			if (Input.GetButtonDown("Weapon1")) //then we use a prisma
-			{
+			if (Input.GetKeyDown(KeyCode.Alpha0))
 				UpdateCursorShape(0);
-			}
-			else if (Input.GetButtonDown("Weapon2")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha1))
 				UpdateCursorShape(1);
-			}
-			else if (Input.GetButtonDown("Weapon3")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha2))
 				UpdateCursorShape(2);
-			}
-			else if (Input.GetButtonDown("Weapon4")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha3))
 				UpdateCursorShape(3);
-			}
-			else if (Input.GetButtonDown("Weapon5")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha4))
 				UpdateCursorShape(4);
-			}
-			else if (Input.GetButtonDown("Weapon6")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha5))
 				UpdateCursorShape(5);
-			}
-			else if (Input.GetButtonDown("Weapon7")) //now we use a cube
-			{
+			else if (Input.GetKeyDown(KeyCode.Alpha6))
 				UpdateCursorShape(6);
-			}
+			else if (Input.GetKeyDown(KeyCode.Alpha7))
+				UpdateCursorShape(7);
+			else if (Input.GetKeyDown(KeyCode.Alpha8))
+				UpdateCursorShape(8);
+			else if (Input.GetKeyDown(KeyCode.Alpha9))
+				UpdateCursorShape(9);
 
 			if (Input.GetButtonDown("Rotate"))
 				Rotation++;
@@ -70,6 +63,7 @@ namespace Assets.Scripts
 
 		void UpdateCursorShape(int nodeID)
 		{
+			SelectedNodeID = nodeID;
 			selectedNode = nodes[nodeID];
 
 			if (CursorGO != null)
@@ -78,6 +72,7 @@ namespace Assets.Scripts
 			CursorGO = Instantiate(selectedNode.BuildPreviewCollider);
 			CursorGO.AddComponent<Cursor>();
 			CursorGO.SetActive(false);
+			CursorGO.name = "CURSOR";
 		}
 
 		void FixedUpdate()

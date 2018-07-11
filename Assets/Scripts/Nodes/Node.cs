@@ -7,6 +7,7 @@ using Assets.Scripts;
 
 public class Node : MonoBehaviour
 {
+	[HideInInspector]
 	public int ID;
 	public string Name;
 	[HideInInspector]
@@ -60,15 +61,22 @@ public class Node : MonoBehaviour
 
 	public void Awake()
 	{
+		gameObject.tag = "Node";
+
 		GameObject defaultPortColliderGO = GetDefaultColliderGO();
 
-		foreach (var port in portCollection)
+		for (int i = 0; i < portCollection.Length; i++)
 		{
+			var port = portCollection[i];
+			port.Index = i;   //assign indexes
+
+			//add default colliders if ports do not have them
 			if (port.Transform.childCount != 0)
 				continue;
 			var portGO = Instantiate(defaultPortColliderGO, port.Transform);
 			portGO.transform.localPosition = Vector3.zero;
 		}
+
 		Destroy(defaultPortColliderGO);
 	}
 
@@ -109,12 +117,6 @@ public class Node : MonoBehaviour
 	{
 		hitColliders = hitColliders ?? new Collider[8];
 		var hitAmount = Physics.OverlapSphereNonAlloc(portInfo.Transform.position, .01f, hitColliders, NodeController.BuildMask,QueryTriggerInteraction.Ignore);
-		if (hitAmount <= 1)
-		{
-			oppositePortInfo = new ConnectionPoint();
-			oppositeNode = null;
-			return false;
-		}
 		for (var i = 0; i < hitAmount; i++)
 		{
 			var hitCollider = hitColliders[i];

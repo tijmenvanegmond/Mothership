@@ -9,11 +9,9 @@ namespace Assets.Scripts
 	public class NodeController : MonoBehaviour
 	{
 		public List<Node> nodeList;
-		public List<Panel> panelList;
 		public List<ConnectionPointType> connectionPointTypes;
 
 		public static Dictionary<int, Node> NodeDict { get; private set; }
-		public static Dictionary<int, Panel> PanelDict { get; private set; }
 		public static Dictionary<int, ConnectionPointType> PortTypeDict { get; private set; }
 		public static int BuildMask;
 		public static int BuildLayer;
@@ -24,34 +22,24 @@ namespace Assets.Scripts
 			BuildLayer = LayerMask.NameToLayer("Building");
 
 			//Load Nodes
-			if (nodeList.GroupBy(x => x.ID).Any(g => g.Count() > 1))
-				throw new Exception("All nodes must have a unique ID");
-
 			if (nodeList.Any(x => x.Name == null))
-				throw new Exception("All nodes must have a name");
+			{
+				var nameClash = nodeList.First(x => x.Name == null).name;
+				throw new Exception("All nodes must have a name. "+ nameClash+" is missing a name.");
+			}
 
 			if (nodeList.GroupBy(x => x.Name).Any(g => g.Count() > 1))
-				throw new Exception("All nodes must have a unique name");
-
+			{
+				var nameClash = nodeList.GroupBy(x => x.Name).First(g => g.Count() > 1).First().Name;
+				throw new Exception("All nodes must have a unique name. Node name clash : " + nameClash+"\n");
+			}
 			NodeDict = new Dictionary<int, Node>();
 
-			foreach (var node in nodeList)
-				NodeDict.Add(node.ID, node);
-
-			//Load Panels(?)
-			if (nodeList.GroupBy(x => x.ID).Any(g => g.Count() > 1))
-				throw new Exception("All panels must have a unique ID");
-
-			if (nodeList.Any(x => x.Name == null))
-				throw new Exception("All panels must have a name");
-
-			if (nodeList.GroupBy(x => x.Name).Any(g => g.Count() > 1))
-				throw new Exception("All panels must have a unique name");
-
-			PanelDict = new Dictionary<int, Panel>();
-
-			foreach (var panel in panelList)
-				PanelDict.Add(panel.ID, panel);
+			for (int i = 0; i < nodeList.Count; i++)
+			{
+				nodeList[i].ID = i;
+				NodeDict.Add(i, nodeList[i]);
+			}
 
 			//Load connectionpointTypes/portTypes
 			if (connectionPointTypes.GroupBy(x => x.ID).Any(g => g.Count() > 1))
