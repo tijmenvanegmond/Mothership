@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Panel : ShipPart {
+public class Panel : Node {
 
 }

@@ -1,14 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.IO;
 using System.Collections.Generic;
 
 public class CreateTriangle : MonoBehaviour
 {
 	public bool Rendered = false;
-	public bool Prisma = true;
 	public float Size = 1f;
 	public float Thickness = 0.1f;
+	enum PrismaShapes
+	{
+		prisma,
+		slope,
+		custom
+	}
+	[SerializeField]
+	PrismaShapes shape;
+	[SerializeField]
+	Transform[] corners = new Transform[3];
 	private List<Vector3> _newVertices = new List<Vector3>();
 	private int[] _newTriangles = new int[24]{
 			0, 1, 2,
@@ -23,35 +30,43 @@ public class CreateTriangle : MonoBehaviour
 			2, 5, 3,
 			0, 2, 3,
 		};
-	//public Vector3[] normals  = new Vector3[6] {Vector3.forward, Vector3.forward, Vector3.forward, Vector3.back, Vector3.back, Vector3.back };
 
 	void Start()
 	{
 		if (!Rendered)
 		{
-			if (Prisma)
+			switch (shape)
 			{
-				_newVertices.Add(new Vector3(0, Thickness / 2f, 0.5773F));
-				_newVertices.Add(new Vector3(.5f, Thickness / 2f, -.2887f));
-				_newVertices.Add(new Vector3(-.5f, Thickness / 2f, -.2887f));
-				_newVertices.Add(new Vector3(0, -Thickness / 2f, 0.5773f));
-				_newVertices.Add(new Vector3(.5f, -Thickness / 2f, -.2887f));
-				_newVertices.Add(new Vector3(-.5f, -Thickness / 2f, -.2887f));
-			}
-			else
-			{
-				_newVertices.Add(new Vector3(Thickness / 2f, Size / 2f, -Size / 2f));
-				_newVertices.Add(new Vector3(Thickness / 2f, -Size / 2f, Size / 2f));
-				_newVertices.Add(new Vector3(Thickness / 2f, -Size / 2f, -Size / 2f));
-				_newVertices.Add(new Vector3(-Thickness / 2f, Size / 2f, -Size / 2f));
-				_newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f, Size / 2f));
-				_newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f, -Size / 2f));
+				case PrismaShapes.custom:
+					_newVertices.Add(new Vector3(Thickness / 2f, corners[0].localPosition.y, corners[0].localPosition.z));
+					_newVertices.Add(new Vector3(Thickness / 2f, corners[1].localPosition.y, corners[1].localPosition.z));
+					_newVertices.Add(new Vector3(Thickness / 2f, corners[2].localPosition.y, corners[2].localPosition.z));
+					_newVertices.Add(new Vector3(-Thickness / 2f, corners[0].localPosition.y, corners[0].localPosition.z));
+					_newVertices.Add(new Vector3(-Thickness / 2f, corners[1].localPosition.y, corners[1].localPosition.z));
+					_newVertices.Add(new Vector3(-Thickness / 2f, corners[2].localPosition.y, corners[2].localPosition.z));
+					break;
+				case PrismaShapes.slope:
+					_newVertices.Add(new Vector3(Thickness / 2f, Size / 2f, -Size / 2f));
+					_newVertices.Add(new Vector3(Thickness / 2f, -Size / 2f, Size / 2f));
+					_newVertices.Add(new Vector3(Thickness / 2f, -Size / 2f, -Size / 2f));
+					_newVertices.Add(new Vector3(-Thickness / 2f, Size / 2f, -Size / 2f));
+					_newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f, Size / 2f));
+					_newVertices.Add(new Vector3(-Thickness / 2f, -Size / 2f, -Size / 2f));
+					break;
+				case PrismaShapes.prisma:
+				default:
+					_newVertices.Add(new Vector3(0, Thickness / 2f, 0.5773F));
+					_newVertices.Add(new Vector3(.5f, Thickness / 2f, -.2887f));
+					_newVertices.Add(new Vector3(-.5f, Thickness / 2f, -.2887f));
+					_newVertices.Add(new Vector3(0, -Thickness / 2f, 0.5773f));
+					_newVertices.Add(new Vector3(.5f, -Thickness / 2f, -.2887f));
+					_newVertices.Add(new Vector3(-.5f, -Thickness / 2f, -.2887f));
+					break;
 			}
 
 			Mesh mesh = new Mesh();
 			GetComponent<MeshFilter>().mesh = mesh;
 			mesh.vertices = _newVertices.ToArray();
-			//mesh.normals = normals;
 			mesh.triangles = _newTriangles;
 			mesh.RecalculateNormals();
 			Rendered = true;

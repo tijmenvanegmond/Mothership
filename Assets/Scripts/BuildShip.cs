@@ -54,11 +54,11 @@ namespace Assets.Scripts
 			}
 			else if (Input.GetButtonDown("Weapon6")) //now we use a cube
 			{
-				UpdateCursorShape(4);
+				UpdateCursorShape(5);
 			}
 			else if (Input.GetButtonDown("Weapon7")) //now we use a cube
 			{
-				UpdateCursorShape(4);
+				UpdateCursorShape(6);
 			}
 
 			if (Input.GetButtonDown("Rotate"))
@@ -104,7 +104,7 @@ namespace Assets.Scripts
 			//now assumed there are no nulls
 			Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);
 			if (Input.GetButtonDown("Fire2")) // if right mouse button was pressed this update delete node that was hit
-				hitShip.RemoveNode(hitNode.gameObject);
+				hitShip.RemoveNode(hitNode);
 			else if (Input.GetButtonDown("Fire1")) // if left mouse button was pressed this update create a node
 			{
 				UpdateCursorPlacement();
@@ -154,7 +154,6 @@ namespace Assets.Scripts
 		{
 			//Calc node placement postion based on portPostions
 			var newPort = GetSelectedPort();
-			//ConnectPortToTarget(CursorGO, newPort.Transform, hitPort.Transform);
 			var t = CursorGO.transform;
 			var pivot = new GameObject().transform;
 			t.rotation = Quaternion.identity;

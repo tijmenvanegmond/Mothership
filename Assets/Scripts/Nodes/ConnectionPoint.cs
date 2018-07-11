@@ -9,5 +9,5 @@ public struct ConnectionPoint
 	public int Index;
 	public Transform Transform;
 	public int TypeID;
-	public ShipPart Connection;
+	public Node Connection;
 }

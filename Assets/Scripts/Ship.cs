@@ -24,24 +24,21 @@ namespace Assets.Scripts
 		public bool AddNode(Node newNode)
 		{
 			var newNodeGO = newNode.gameObject;
-
-			//TODO: check node placement legit
-			if (newNodeGO.transform.parent != gameObject)
-				return false;
-
-			if (!newNode.HasViableConnections())
-				return false;
-
-			newNode.ConnectPorts();
-			return true;
+			//Check node placement legit
+			//TODO: check for collisions
+			if (newNodeGO.transform.parent == transform && newNode.HasViableConnections())
+			{
+				newNode.ConnectPorts();
+				return true;
+			}
+			Debug.Log("Node placement failed. \n Node not a child of expected ship or no viable connections.");
+			Destroy(newNodeGO);
+			return false;
 		}
 
-		public void RemoveNode(GameObject node)
+		public void RemoveNode(Node node)
 		{
-			//node.DisconnetPorts();
-			//GameObject port = Utility.FindParentWithTag(node.gameObject, "Port");
-			//GameObject parentNode = Utility.FindParentWithTag(port, "Node");
-			Destroy(node.gameObject);
+			node.Remove();
 		}
 	}
 }
