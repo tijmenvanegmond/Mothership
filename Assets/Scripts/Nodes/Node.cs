@@ -80,13 +80,27 @@ public class Node : MonoBehaviour
 		Destroy(defaultPortColliderGO);
 	}
 
+
+	public void Update()
+	{
+		foreach (var port in portCollection)
+		{
+			var c = Color.cyan;
+			if (port.Transform.localScale.y < 1f)
+				c = Color.magenta;
+			Debug.DrawLine(port.Transform.position, port.Transform.TransformPoint(Vector3.up*.5f), c);
+		}
+	}
+
 	private static GameObject GetDefaultColliderGO()
 	{
 		//Add a default portBuildCollider to each port (of node)
 		var defaultPortColliderGO = new GameObject();
-		var defaultPortBuildCollider = defaultPortColliderGO.AddComponent<BoxCollider>() as BoxCollider;
-		defaultPortBuildCollider.center = new Vector3(0, .025f, 0);
-		defaultPortBuildCollider.size = new Vector3(.5f, .05f, .5f);
+		//var defaultPortBuildCollider = defaultPortColliderGO.AddComponent<BoxCollider>() as BoxCollider;
+		//defaultPortBuildCollider.center = new Vector3(0, .025f, 0);
+		//defaultPortBuildCollider.size = new Vector3(.5f, .05f, .5f);
+		var defaultPortBuildCollider = defaultPortColliderGO.AddComponent<SphereCollider>() as SphereCollider;
+		defaultPortBuildCollider.radius = .2f;
 		defaultPortColliderGO.layer = NodeController.BuildLayer;
 		defaultPortColliderGO.name = "portBuildCollider";
 		return defaultPortColliderGO;

@@ -59,6 +59,8 @@ namespace Assets.Scripts
 
 			if (Input.GetButtonDown("SwitchPort"))
 				PortNumber++;
+
+			UpdateCursor();
 		}
 
 		void UpdateCursorShape(int nodeID)
@@ -75,7 +77,7 @@ namespace Assets.Scripts
 			CursorGO.name = "CURSOR";
 		}
 
-		void FixedUpdate()
+		void UpdateCursor()
 		{
 			var layerMask = NodeController.BuildMask;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -108,6 +110,7 @@ namespace Assets.Scripts
 					var nodeGO = Instantiate(selectedNode.gameObject, hitShip.transform);
 					nodeGO.transform.position = CursorGO.transform.position;
 					nodeGO.transform.rotation = CursorGO.transform.rotation;
+					nodeGO.transform.localScale = CursorGO.transform.localScale;
 					hitShip.AddNode(nodeGO);
 				}
 				else
@@ -149,44 +152,24 @@ namespace Assets.Scripts
 		{
 			//Calc node placement postion based on portPostions
 			var newPort = GetSelectedPort();
-			var t = CursorGO.transform;
 			var pivot = new GameObject().transform;
+			var t = CursorGO.transform;
+			//reset cursor transform
 			t.rotation = Quaternion.identity;
 			t.position = Vector3.zero;
+			t.localScale = Vector3.one;
 			t.parent = pivot;
-			t.localRotation = Quaternion.Inverse(newPort.Transform.localRotation);
+			t.localRotation = Quaternion.Inverse(newPort.Transform.localRotation); //rotate so that selectedport rotation is "zero'd"
 			t.Translate(-newPort.Transform.localPosition, Space.Self);
-			pivot.transform.rotation = hitPort.Transform.rotation * Quaternion.Euler(0, 0, 180f); //inverse rotation so port ar facing eachother
+			pivot.transform.rotation = hitPort.Transform.rotation;
 			pivot.transform.position = hitPort.Transform.position;
+			pivot.transform.localScale = new Vector3(1, newPort.Transform.localScale.y* hitPort.Transform.localScale.y * hitNode.transform.localScale.y *-1f, 1); //flip it based on the Yscale of the node & port (causes negative scales)
 			t.transform.parent = null;
 			Destroy(pivot.gameObject);
 
 			CursorGO.transform.RotateAround(hitPort.Transform.position, hitPort.Transform.rotation * Vector3.up, Rotation * hitPortType.RotationStep);
 			CursorGO.gameObject.SetActive(true);
 		}
-
-		/// <summary>
-		/// Changes the nodes transform so that both ports are connected
-		/// </summary>
-		/// <param name="from"></param>
-		/// <param name="target"></param>
-		/// <returns></returns>
-		public static GameObject ConnectPortToTarget(GameObject node, Transform port, Transform target)
-		{
-			var t = node.transform;
-			var pivot = new GameObject().transform;
-			t.rotation = Quaternion.identity;
-			t.position = Vector3.zero;
-			t.parent = pivot;
-			t.localRotation = Quaternion.Inverse(port.localRotation);
-			t.Translate(-port.localPosition, Space.Self);
-			pivot.transform.rotation = target.rotation * Quaternion.Euler(0, 0, 180f); //inverse rotation so port ar facing eachother
-			pivot.transform.position = target.position;
-			t.transform.parent = null;
-			Destroy(pivot.gameObject);
-			return node;
-		}
-
 
 		/// <summary>
 		/// get info of the current selected port of the selectednode (breaks on no matching porttypes)
