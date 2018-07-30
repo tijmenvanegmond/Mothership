@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -7,10 +8,21 @@ namespace Assets.Scripts
 	public class Ship : MonoBehaviour
 	{
 		Dictionary<int, Node> nodes;
+		Rigidbody rBody;
 
 		public void Start()
 		{
 			nodes = NodeController.NodeDict;
+			rBody = GetComponent<Rigidbody>();
+			if(rBody == null)
+			{
+				rBody = gameObject.AddComponent<Rigidbody>() as Rigidbody;
+				rBody.drag = 0;
+				rBody.angularDrag = .3f;
+				rBody.useGravity = false;
+				rBody.interpolation = RigidbodyInterpolation.Interpolate;
+				rBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+			}
 		}
 
 		public bool AddNode(GameObject newNode)
@@ -39,7 +51,17 @@ namespace Assets.Scripts
 		public void RemoveNode(Node node)
 		{
 			//check node connections
-
+			var nodeGroupList = node.DoBridgeCheck().OrderByDescending(g => g.Count()); ;
+			if (nodeGroupList.Count() > 1)
+			{
+				var biggest = nodeGroupList.First();
+				var smallest = nodeGroupList.Last();
+				//TODO: split up ship
+				foreach (var aNode in smallest)
+				{
+					aNode.Remove();
+				}
+			}
 			node.Remove();
 		}
 

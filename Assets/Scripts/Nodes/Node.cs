@@ -196,19 +196,29 @@ public class Node : MonoBehaviour
 		}
 	}
 
-	internal void CheckIfBridge()
+	internal List<HashSet<Node>> DoBridgeCheck() //TODO: name not descriptive
 	{
-		var cNodes = GetConnectedNodes();
-		if (cNodes.Length <= 1)
-			return; //todo retrun false?
+		var disconnectedNodeSetList = new List<HashSet<Node>>();
+		var neigbours = GetConnectedNodes();
+		if (neigbours.Length <= 1) //cant be a bridge if it's conected to 1 or less nodes
+			return disconnectedNodeSetList;
 
-		for (int i = 1; i < cNodes.Length; i++)
+		foreach (var nNode in neigbours)
 		{
-			HashSet<Node> passedSet;
-			var result = BreadthFirstNodeSearch(cNodes[0], cNodes[i], out passedSet, false);
-			Debug.Log(String.Format("{0} connection status with {1}: {2}", cNodes[0].Name, cNodes[i].Name, result));
-
+			var isRepresented = false;
+			foreach (var set in disconnectedNodeSetList) //check if there's already a group with this node
+			{
+				if (set.Contains(nNode))
+				{
+					isRepresented = true;
+					break;
+				}
+			}
+			if(!isRepresented)
+				disconnectedNodeSetList.Add(GetFloodfillGroup(nNode, false));
 		}
+
+		return disconnectedNodeSetList;
 	}
 
 
@@ -231,7 +241,6 @@ public class Node : MonoBehaviour
 
 			if (subNode == end)
 				return true;
-
 			foreach (var child in subNode.GetConnectedNodes())
 			{
 				//check if algorithm can navigate the node that called it, if not, check for that node;
@@ -249,9 +258,36 @@ public class Node : MonoBehaviour
 		return false;
 	}
 
+	private HashSet<Node> GetFloodfillGroup(Node start, bool canUseSelf = true) //TODO: fix possible endless loops
+	{
+		var group = new HashSet<Node>();
+		var queue = new Queue<Node>();
+		queue.Enqueue(start);
+
+		while (queue.Any())
+		{
+			var subNode = queue.Dequeue();
+
+			foreach (var child in subNode.GetConnectedNodes())
+			{
+				//check if algorithm can navigate the node that called it, if not, check for that node;
+				if (!canUseSelf && child == this)
+					continue;
+				if (group.Contains(child))
+					continue;
+				if (queue.Contains(child))
+					continue;
+				queue.Enqueue(child);
+			}
+
+			group.Add(subNode);
+		}
+		return group;
+	}
+
+
 	public void Remove()
 	{
-		CheckIfBridge();
 		DisconnectPorts();
 		Destroy(gameObject);
 	}
