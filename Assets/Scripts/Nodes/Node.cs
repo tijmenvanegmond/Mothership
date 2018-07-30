@@ -196,6 +196,10 @@ public class Node : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Checks if neigbours still have a connections path to each other, groups those who are connected.
+	/// </summary>
+	/// <returns>Returns a list of nodeHashSets that are connected to each other</returns>
 	internal List<HashSet<Node>> DoBridgeCheck() //TODO: name not descriptive
 	{
 		var disconnectedNodeSetList = new List<HashSet<Node>>();
@@ -203,6 +207,7 @@ public class Node : MonoBehaviour
 		if (neigbours.Length <= 1) //cant be a bridge if it's conected to 1 or less nodes
 			return disconnectedNodeSetList;
 
+		//split ship into connected groups
 		foreach (var nNode in neigbours)
 		{
 			var isRepresented = false;
@@ -214,13 +219,44 @@ public class Node : MonoBehaviour
 					break;
 				}
 			}
-			if(!isRepresented)
-				disconnectedNodeSetList.Add(GetFloodfillGroup(nNode, false));
+			if (!isRepresented)
+				disconnectedNodeSetList.Add(GetFloodfillGroup(nNode,this));
 		}
 
 		return disconnectedNodeSetList;
 	}
 
+	/// <summary>
+	/// Makes a group of all nodes that are connected to this node
+	/// </summary>
+	/// <param name="start"></param>
+	/// <param name="ignoreNode">node that the algoritm ignores</param>
+	/// <returns></returns>
+	private HashSet<Node> GetFloodfillGroup(Node start, Node ignoreNode = null)
+	{
+		var set = new HashSet<Node>();
+		set.Add(start);
+		AddConnectionsToHashSet(start, ref set, ignoreNode);
+		return set;
+	}
+	/// <summary>
+	/// Recursion-like method that adds all connected to the set
+	/// </summary>
+	/// <param name="parent"></param>
+	/// <param name="set"></param>
+	/// <param name="ignoerNode">node that the algoritm ignores</param>
+	private void AddConnectionsToHashSet(Node parent, ref HashSet<Node> set, Node ignoerNode = null)
+	{
+		foreach (var child in parent.GetConnectedNodes())
+		{
+			if (child == ignoerNode)
+				continue;
+			if (set.Contains(child))
+				continue;
+			set.Add(child);
+			AddConnectionsToHashSet(child, ref set, ignoerNode);
+		}
+	}
 
 	/// <summary>
 	/// Uses Breadth First to see if there's a path from start to end
@@ -257,34 +293,6 @@ public class Node : MonoBehaviour
 		}
 		return false;
 	}
-
-	private HashSet<Node> GetFloodfillGroup(Node start, bool canUseSelf = true) //TODO: fix possible endless loops
-	{
-		var group = new HashSet<Node>();
-		var queue = new Queue<Node>();
-		queue.Enqueue(start);
-
-		while (queue.Any())
-		{
-			var subNode = queue.Dequeue();
-
-			foreach (var child in subNode.GetConnectedNodes())
-			{
-				//check if algorithm can navigate the node that called it, if not, check for that node;
-				if (!canUseSelf && child == this)
-					continue;
-				if (group.Contains(child))
-					continue;
-				if (queue.Contains(child))
-					continue;
-				queue.Enqueue(child);
-			}
-
-			group.Add(subNode);
-		}
-		return group;
-	}
-
 
 	public void Remove()
 	{

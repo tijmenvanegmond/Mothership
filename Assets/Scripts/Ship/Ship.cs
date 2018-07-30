@@ -7,14 +7,14 @@ namespace Assets.Scripts
 {
 	public class Ship : MonoBehaviour
 	{
+		public Rigidbody rBody;
 		Dictionary<int, Node> nodes;
-		Rigidbody rBody;
 
 		public void Start()
 		{
 			nodes = NodeController.NodeDict;
 			rBody = GetComponent<Rigidbody>();
-			if(rBody == null)
+			if (rBody == null)
 			{
 				rBody = gameObject.AddComponent<Rigidbody>() as Rigidbody;
 				rBody.drag = 0;
@@ -50,21 +50,23 @@ namespace Assets.Scripts
 
 		public void RemoveNode(Node node)
 		{
-			//check node connections
-			var nodeGroupList = node.DoBridgeCheck().OrderByDescending(g => g.Count()); ;
-			if (nodeGroupList.Count() > 1)
+			//Check node connections
+			var nodeSetList = node.DoBridgeCheck().OrderByDescending(g => g.Count()); //biggest first
+			if (nodeSetList.Count() > 1)
 			{
-				var biggest = nodeGroupList.First();
-				var smallest = nodeGroupList.Last();
-				//TODO: split up ship
-				foreach (var aNode in smallest)
+				//split up the ship into groups created
+				foreach (var set in nodeSetList.Skip(1))
 				{
-					aNode.Remove();
+					var newShipGO = new GameObject();
+					newShipGO.name = name + "-breakoff";
+					var newShip = newShipGO.AddComponent<Ship>();
+					//TODO: add Velocity & angularVelocity
+					foreach (var aNode in set)
+						aNode.transform.parent = newShipGO.transform;
 				}
 			}
 			node.Remove();
+			//TODO: recalculate ship properties
 		}
-
-
 	}
 }
