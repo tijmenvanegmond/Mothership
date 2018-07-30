@@ -16,6 +16,11 @@ public class Node : MonoBehaviour
 	[SerializeField]
 	private ConnectionPoint[] portCollection;
 
+	public Node[] GetConnectedNodes()
+	{
+		return portCollection.Where(x => x.Connection != null).Select(x => x.Connection).ToArray();
+	}
+
 	public bool HasPortOfType(int typeID)
 	{
 		return portCollection.Any(x => x.TypeID == typeID);
@@ -88,7 +93,7 @@ public class Node : MonoBehaviour
 			var c = Color.cyan;
 			if (port.Transform.localScale.y < 1f)
 				c = Color.magenta;
-			Debug.DrawLine(port.Transform.position, port.Transform.TransformPoint(Vector3.up*.5f), c);
+			Debug.DrawLine(port.Transform.position, port.Transform.TransformPoint(Vector3.up * .5f), c);
 		}
 	}
 
@@ -130,7 +135,7 @@ public class Node : MonoBehaviour
 	bool GetOppositePort(ConnectionPoint portInfo, out ConnectionPoint oppositePortInfo, out Node oppositeNode, Collider[] hitColliders = null)
 	{
 		hitColliders = hitColliders ?? new Collider[8];
-		var hitAmount = Physics.OverlapSphereNonAlloc(portInfo.Transform.position, .01f, hitColliders, NodeController.BuildMask,QueryTriggerInteraction.Ignore);
+		var hitAmount = Physics.OverlapSphereNonAlloc(portInfo.Transform.position, .01f, hitColliders, NodeController.BuildMask, QueryTriggerInteraction.Ignore);
 		for (var i = 0; i < hitAmount; i++)
 		{
 			var hitCollider = hitColliders[i];
@@ -191,8 +196,62 @@ public class Node : MonoBehaviour
 		}
 	}
 
+	internal void CheckIfBridge()
+	{
+		var cNodes = GetConnectedNodes();
+		if (cNodes.Length <= 1)
+			return; //todo retrun false?
+
+		for (int i = 1; i < cNodes.Length; i++)
+		{
+			HashSet<Node> passedSet;
+			var result = BreadthFirstNodeSearch(cNodes[0], cNodes[i], out passedSet, false);
+			Debug.Log(String.Format("{0} connection status with {1}: {2}", cNodes[0].Name, cNodes[i].Name, result));
+
+		}
+	}
+
+
+	/// <summary>
+	/// Uses Breadth First to see if there's a path from start to end
+	/// </summary>
+	/// <param name="start"></param>
+	/// <param name="end"></param>
+	/// <param name="useSelf">determines if the algorithm is allowed to traverse the node that calls this function</param>
+	/// <returns></returns>
+	private bool BreadthFirstNodeSearch(Node start, Node end, out HashSet<Node> passedSet, bool useSelf = true) //TODO: fix possible endless loops
+	{
+		passedSet = new HashSet<Node>();
+		var queue = new Queue<Node>();
+		queue.Enqueue(start);
+
+		while (queue.Any())
+		{
+			var subNode = queue.Dequeue();
+
+			if (subNode == end)
+				return true;
+
+			foreach (var child in subNode.GetConnectedNodes())
+			{
+				//check if algorithm can navigate the node that called it, if not, check for that node;
+				if (!useSelf && child == this)
+					continue;
+				if (passedSet.Contains(child))
+					continue;
+				if (queue.Contains(child))
+					continue;
+				queue.Enqueue(child);
+			}
+
+			passedSet.Add(subNode);
+		}
+		return false;
+	}
+
 	public void Remove()
 	{
+		CheckIfBridge();
 		DisconnectPorts();
 		Destroy(gameObject);
 	}

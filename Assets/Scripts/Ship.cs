@@ -38,7 +38,11 @@ namespace Assets.Scripts
 
 		public void RemoveNode(Node node)
 		{
+			//check node connections
+
 			node.Remove();
 		}
+
+
 	}
 }
