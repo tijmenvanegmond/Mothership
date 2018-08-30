@@ -10,6 +10,8 @@ public class Node : MonoBehaviour
 	[HideInInspector]
 	public int ID;
 	public string Name;
+	public float Mass = 1;
+
 	[HideInInspector]
 	public bool Rendered;
 	public GameObject BuildPreviewCollider;
@@ -99,7 +101,7 @@ public class Node : MonoBehaviour
 
 	private static GameObject GetDefaultColliderGO()
 	{
-		//Add a default portBuildCollider to each port (of node)
+		//A default portBuildCollider for each port (of node)
 		var defaultPortColliderGO = new GameObject();
 		//var defaultPortBuildCollider = defaultPortColliderGO.AddComponent<BoxCollider>() as BoxCollider;
 		//defaultPortBuildCollider.center = new Vector3(0, .025f, 0);
@@ -177,11 +179,11 @@ public class Node : MonoBehaviour
 		foreach (var portInfo in portCollection)
 		{
 			ConnectionPoint oppositePortInfo;
-			Node oppisiteNode;
-			if (!GetOppositePort(portInfo, out oppositePortInfo, out oppisiteNode, hitColliders))
+			Node oppositeNode;
+			if (!GetOppositePort(portInfo, out oppositePortInfo, out oppositeNode, hitColliders))
 				continue;
 
-			AddNodeConnection(portInfo.Index, oppisiteNode, oppositePortInfo.Index);
+			AddNodeConnection(portInfo.Index, oppositeNode, oppositePortInfo.Index);
 		}
 	}
 
@@ -200,7 +202,7 @@ public class Node : MonoBehaviour
 	/// Checks if neigbours still have a connections path to each other, groups those who are connected.
 	/// </summary>
 	/// <returns>Returns a list of nodeHashSets that are connected to each other</returns>
-	internal List<HashSet<Node>> DoBridgeCheck() //TODO: name not descriptive
+	internal List<HashSet<Node>> CheckIfNodeABridge() //TODO: name not descriptive
 	{
 		var disconnectedNodeSetList = new List<HashSet<Node>>();
 		var neigbours = GetConnectedNodes();
@@ -239,6 +241,7 @@ public class Node : MonoBehaviour
 		AddConnectionsToHashSet(start, ref set, ignoreNode);
 		return set;
 	}
+
 	/// <summary>
 	/// Recursion-like method that adds all connected to the set
 	/// </summary>
