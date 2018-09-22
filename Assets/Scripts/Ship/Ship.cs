@@ -107,9 +107,12 @@ namespace Assets.Scripts
 					var newShipGO = new GameObject();
 					newShipGO.name = name + "-breakoff";
 					var newShip = newShipGO.AddComponent<Ship>();
-					//TODO: add Velocity & angularVelocity
 					foreach (var aNode in set)
 						aNode.transform.parent = newShipGO.transform;
+					//TODO: add velocity based on angularVelocity
+					//And better rbody way
+					var newRBody = newShipGO.AddComponent<Rigidbody>() as Rigidbody;
+					newRBody.velocity = rBody.velocity;
 				}
 			}
 

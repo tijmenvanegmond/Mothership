@@ -42,7 +42,8 @@ public class ShipUI : MonoBehaviour {
 		dampeningIndicatorText.color = isDampening ? Color.cyan : new Color(1f, .2f, 0f);
 
 		//Arrow ui
-		UIVelocityArrow.transform.rotation = Quaternion.LookRotation(rBody.velocity);
+		if(rBody.velocity != Vector3.zero)
+			UIVelocityArrow.transform.rotation = Quaternion.LookRotation(rBody.velocity);
 		var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
 		arrowRenderer.length = Mathf.Min(1f, arrowScalar * 2f);
 		arrowRenderer.radius = Mathf.Min(.4f, arrowScalar * 1.2f);
