@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Panel : Node {
+public class Panel : Node
+{
 
 }

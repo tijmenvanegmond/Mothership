@@ -1,2 +1,3 @@
 # Mothership
-a unity project about node based spaceships
+
+A unity WIP project about node based spaceships.

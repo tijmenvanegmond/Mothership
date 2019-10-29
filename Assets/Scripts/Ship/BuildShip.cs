@@ -164,7 +164,7 @@ namespace Assets.Scripts
             t.Translate(-newPort.Transform.localPosition, Space.Self);
             pivot.transform.rotation = hitPort.Transform.rotation;
             pivot.transform.position = hitPort.Transform.position;
-			//rotate based on presetvalues
+            //rotate based on presetvalues
             pivot.transform.Rotate(hitPortType.PlacementRotation.x, hitPortType.PlacementRotation.y, hitPortType.PlacementRotation.z, Space.Self);
             t.transform.parent = null;
             Destroy(pivot.gameObject);
