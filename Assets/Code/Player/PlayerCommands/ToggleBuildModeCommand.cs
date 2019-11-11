@@ -1,9 +1,6 @@
+class ToggleBuildModeCommand : BuildCommand {
 
-class ToggleBuildModeCommand : BuildCommand
-{
-
-    public void handle()
-    {
+    public void handle () {
 
     }
 }

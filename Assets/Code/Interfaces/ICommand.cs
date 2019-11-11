@@ -1,6 +1,4 @@
-
-public interface ICommand
-{
-    void execute();
+public interface ICommand {
+    void execute ();
 
 }

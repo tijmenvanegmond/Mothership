@@ -1,15 +1,10 @@
-
-class ChangeSelectedNodeCommand : BuildCommand
-{
-    public ChangeSelectedNodeCommand(Node node)
-    {
+class ChangeSelectedNodeCommand : BuildCommand {
+    public ChangeSelectedNodeCommand (Node node) {
 
     }
 
-    public override void execute()
-    {
-        base.execute();
+    public override void execute () {
+        base.execute ();
     }
-
 
 }

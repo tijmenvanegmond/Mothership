@@ -1,9 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PIDcontroller
-{
+public class PIDcontroller {
 
     // The gains are chosen experimentally
     public float Kp = 1;
@@ -13,8 +12,7 @@ public class PIDcontroller
     float prevError;
     float P, I, D;
 
-    public float GetOutput(float currentError, float dt)
-    {
+    public float GetOutput (float currentError, float dt) {
         P = currentError;
         I += P * dt;
         D = (P - prevError) / dt;

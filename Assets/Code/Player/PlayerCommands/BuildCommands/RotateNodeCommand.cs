@@ -1,12 +1,8 @@
-
-class RotateNodeCommand : BuildCommand
-{
-    public RotateNodeCommand(Node node)
-    {
+class RotateNodeCommand : BuildCommand {
+    public RotateNodeCommand (Node node) {
 
     }
-    public void handle()
-    {
+    public void handle () {
 
     }
 }

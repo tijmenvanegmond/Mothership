@@ -1,11 +1,10 @@
-﻿using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShipUI : MonoBehaviour
-{
+public class ShipUI : MonoBehaviour {
 
     //External Data
     [SerializeField]
@@ -19,34 +18,31 @@ public class ShipUI : MonoBehaviour
     private Text speedometerText;
     private Text dampeningIndicatorText;
 
-
-    void Start()
-    {
+    void Start () {
         if (ship == null)
-            Debug.LogError("Ship must be assigned for UI to work");
-        shipController = ship.gameObject.GetComponent<ShipController>() as ShipController;
+            Debug.LogError ("Ship must be assigned for UI to work");
+        shipController = ship.gameObject.GetComponent<ShipController> () as ShipController;
 
-        speedometerText = UISpeedometer.GetComponent<Text>();
-        dampeningIndicatorText = UIDampeningIndicator.GetComponent<Text>();
-        arrowRenderer = UIVelocityArrow.GetComponent<ArrowRenderer>();
+        speedometerText = UISpeedometer.GetComponent<Text> ();
+        dampeningIndicatorText = UIDampeningIndicator.GetComponent<Text> ();
+        arrowRenderer = UIVelocityArrow.GetComponent<ArrowRenderer> ();
     }
 
-    void Update()
-    {
+    void Update () {
         var rBody = ship.rBody;
         var isDampening = shipController.IsDampening;
         var maxSpeed = Ship.MAX_SPEED;
 
         var speed = rBody.velocity.magnitude;
-        speedometerText.text = "Speed : " + (speed * 3.6f).ToString("0.0") + "km/h";
+        speedometerText.text = "Speed : " + (speed * 3.6f).ToString ("0.0") + "km/h";
         dampeningIndicatorText.text = isDampening ? "Dampening : ON" : "Dampening : OFF";
-        dampeningIndicatorText.color = isDampening ? Color.cyan : new Color(1f, .2f, 0f);
+        dampeningIndicatorText.color = isDampening ? Color.cyan : new Color (1f, .2f, 0f);
 
         //Arrow ui
         if (rBody.velocity != Vector3.zero)
-            UIVelocityArrow.transform.rotation = Quaternion.LookRotation(rBody.velocity);
-        var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
-        arrowRenderer.length = Mathf.Min(1f, arrowScalar * 2f);
-        arrowRenderer.radius = Mathf.Min(.4f, arrowScalar * 1.2f);
+            UIVelocityArrow.transform.rotation = Quaternion.LookRotation (rBody.velocity);
+        var arrowScalar = Mathf.Sqrt (speed / maxSpeed);
+        arrowRenderer.length = Mathf.Min (1f, arrowScalar * 2f);
+        arrowRenderer.radius = Mathf.Min (.4f, arrowScalar * 1.2f);
     }
 }

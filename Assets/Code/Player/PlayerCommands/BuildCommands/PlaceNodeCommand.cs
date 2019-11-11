@@ -1,13 +1,7 @@
+class PlaceNodeCommand : BuildCommand {
 
-class PlaceNodeCommand : BuildCommand
-{
-
-
-    public PlaceNodeCommand(Node node)
-    {
+    public PlaceNodeCommand (Node node) {
 
     }
-
-
 
 }

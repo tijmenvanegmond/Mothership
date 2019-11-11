@@ -1,8 +1,3 @@
-
-abstract class BuildCommand : ICommand
-{
-    public virtual void execute()
-    {
-    }
+abstract class BuildCommand : ICommand {
+    public virtual void execute () { }
 }
-
