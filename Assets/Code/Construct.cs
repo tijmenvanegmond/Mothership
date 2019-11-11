@@ -3,27 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Ship : MonoBehaviour { //should implement construct
-    //Max speed in m/s
-    //TODO: it's only used for UI V-arrow
-    public const float MAX_SPEED = 50f;
-    public Rigidbody rBody;
+public class Construct : MonoBehaviour {
     Dictionary<int, Node> nodes;
     HashSet<Node> myNodes;
-    public Truster[] Trusters = new Truster[0];
 
     public void Start () {
         nodes = NodeController.NodeDict;
         myNodes = new HashSet<Node> ();
-        rBody = GetComponent<Rigidbody> ();
-        if (rBody == null) {
-            rBody = gameObject.AddComponent<Rigidbody> () as Rigidbody;
-            rBody.drag = 0;
-            rBody.angularDrag = .3f;
-            rBody.useGravity = false;
-            rBody.interpolation = RigidbodyInterpolation.Interpolate;
-            rBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        }
 
         AddChildNodesToMyNodes ();
     }
@@ -31,27 +17,6 @@ public class Ship : MonoBehaviour { //should implement construct
     private void AddChildNodesToMyNodes () {
         foreach (Transform child in transform)
             AddNode (child.gameObject, false);
-    }
-
-    public void UpdateShip () {
-        CalculateMass ();
-        UpdateTrusters ();
-    }
-
-    float CalculateMass () {
-        float totalMass = 0;
-        Vector3 centerOfMass = Vector3.zero;
-        foreach (var node in myNodes) {
-            totalMass += node.Mass;
-            centerOfMass += node.transform.localPosition * node.Mass;
-        }
-        rBody.mass = totalMass;
-        rBody.centerOfMass = centerOfMass = centerOfMass / totalMass;
-        return totalMass;
-    }
-
-    void UpdateTrusters () {
-        Trusters = myNodes.OfType<Truster> ().ToArray ();
     }
 
     public bool AddNode (GameObject newNode, bool checkPlacement = true) {
@@ -74,7 +39,6 @@ public class Ship : MonoBehaviour { //should implement construct
         }
         newNode.ConnectPorts ();
         myNodes.Add (newNode);
-        UpdateShip ();
         return true;
     }
 
@@ -103,13 +67,6 @@ public class Ship : MonoBehaviour { //should implement construct
         node.Remove ();
         //TODO: recalculate ship properties
         UpdateShip ();
-    }
-
-    ///DEBUG
-    void OnDrawGizmosSelected () {
-        Gizmos.color = Color.yellow;
-        if (rBody != null)
-            Gizmos.DrawSphere (transform.TransformPoint (rBody.centerOfMass), rBody.mass * .05f);
     }
 
 }

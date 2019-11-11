@@ -1,77 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-public class BuildShip : MonoBehaviour {
+public class BuildMode : MonoBehaviour {
     private Node selectedNode;
-    public int Rotation = 0;
-    public int PortNumber = 0;
-    public int SelectedNodeID = 0;
-    private IDictionary<int, Node> nodes;
-    private IDictionary<int, ConnectionPointType> portTypes;
     private GameObject CursorGO;
     private Ship hitShip;
     private Node hitNode; //selected node to build on / delete
     private ConnectionPoint hitPort; //selected port to build on / delete
-    private ConnectionPointType hitPortType { get { return portTypes[hitPort.TypeID]; } }
+    private ConnectionPointType hitPortType; //{ get { return portTypes[hitPort.TypeID]; } }
 
-    void Start () {
-        nodes = NodeController.NodeDict;
-        portTypes = NodeController.PortTypeDict;
+    private int buildMask;
 
-        UpdateCursorShape (0);
+    public BuildMode (int buildMask) {
+        this.buildMask = buildMask;
     }
 
-    //Update inputs once per frame
     void Update () {
-        if (Input.GetKeyDown (KeyCode.Alpha0))
-            UpdateCursorShape (0);
-        else if (Input.GetKeyDown (KeyCode.Alpha1))
-            UpdateCursorShape (1);
-        else if (Input.GetKeyDown (KeyCode.Alpha2))
-            UpdateCursorShape (2);
-        else if (Input.GetKeyDown (KeyCode.Alpha3))
-            UpdateCursorShape (3);
-        else if (Input.GetKeyDown (KeyCode.Alpha4))
-            UpdateCursorShape (4);
-        else if (Input.GetKeyDown (KeyCode.Alpha5))
-            UpdateCursorShape (5);
-        else if (Input.GetKeyDown (KeyCode.Alpha6))
-            UpdateCursorShape (6);
-        else if (Input.GetKeyDown (KeyCode.Alpha7))
-            UpdateCursorShape (7);
-        else if (Input.GetKeyDown (KeyCode.Alpha8))
-            UpdateCursorShape (8);
-        else if (Input.GetKeyDown (KeyCode.Alpha9))
-            UpdateCursorShape (9);
-
-        if (Input.GetButtonDown ("Rotate"))
-            Rotation++;
-
-        if (Input.GetButtonDown ("SwitchPort"))
-            PortNumber++;
-
-        UpdateCursor ();
-    }
-
-    void UpdateCursorShape (int nodeID) {
-        SelectedNodeID = nodeID;
-        selectedNode = nodes[nodeID];
-
-        if (CursorGO != null)
-            Destroy (CursorGO);
-
-        CursorGO = Instantiate (selectedNode.BuildPreviewCollider);
-        CursorGO.AddComponent<Cursor> ();
-        CursorGO.SetActive (false);
-        CursorGO.name = "CURSOR";
-    }
-
-    void UpdateCursor () {
-        var layerMask = NodeController.BuildMask;
         Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
         RaycastHit hit;
-        Physics.Raycast (ray, out hit, layerMask);
+        Physics.Raycast (ray, out hit, buildMask);
 
         //make sure there are no nulls
         if (!IsValidShipHit (hit)) //only continue if a viable (with port & ship parent) collider has been hit
@@ -104,6 +49,10 @@ public class BuildShip : MonoBehaviour {
         } else {
             UpdateCursorPlacement ();
         }
+    }
+
+    private void renderCursor (GameObject CursorGO) {
+
     }
 
     private bool IsValidShipHit (RaycastHit hit) {
