@@ -9,12 +9,9 @@ namespace Assets.Scripts {
         public int Rotation = 0;
         public int PortNumber = 0;
         public int SelectedNodeID = 0;
-
         private IDictionary<int, Node> nodes;
         private IDictionary<int, ConnectionPointType> portTypes;
-
         private GameObject CursorGO;
-
         private Ship hitShip;
         private Node hitNode; //selected node to build on / delete
         private ConnectionPoint hitPort; //selected port to build on / delete
