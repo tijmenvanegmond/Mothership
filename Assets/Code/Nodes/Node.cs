@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts;
 using UnityEngine;
 
 public class Node : MonoBehaviour {
@@ -221,15 +218,15 @@ public class Node : MonoBehaviour {
     /// </summary>
     /// <param name="parent"></param>
     /// <param name="set"></param>
-    /// <param name="ignoerNode">node that the algoritm ignores</param>
-    private void AddConnectionsToHashSet (Node parent, ref HashSet<Node> set, Node ignoerNode = null) {
+    /// <param name="ignoreNode">node that the algoritm ignores</param>
+    private void AddConnectionsToHashSet (Node parent, ref HashSet<Node> set, Node ignoreNode = null) {
         foreach (var child in parent.GetConnectedNodes ()) {
-            if (child == ignoerNode)
+            if (child == ignoreNode)
                 continue;
             if (set.Contains (child))
                 continue;
             set.Add (child);
-            AddConnectionsToHashSet (child, ref set, ignoerNode);
+            AddConnectionsToHashSet (child, ref set, ignoreNode);
         }
     }
 
