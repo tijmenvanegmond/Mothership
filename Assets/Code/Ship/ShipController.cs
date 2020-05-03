@@ -68,7 +68,7 @@ public class ShipController : MonoBehaviour {
                 if (dot < 0) {
                     Vector3 force = truster.GetForceVector();
                     Vector3 postion = truster.GetForcePostion();
-                    truster.FireTuster(Mathf.Min(.5f, -dot));
+                    truster.FireTruster(Mathf.Min(.5f, -dot));
                 }
 
                 //dampen angular momentum
@@ -76,7 +76,7 @@ public class ShipController : MonoBehaviour {
                 if (dot < 0) {
                     Vector3 force = truster.GetForceVector();
                     Vector3 postion = truster.GetForcePostion();
-                    truster.FireTuster(Mathf.Min(.2f, -dot));
+                    truster.FireTruster(Mathf.Min(.2f, -dot));
                 }
 
             }
@@ -90,7 +90,7 @@ public class ShipController : MonoBehaviour {
             if (dot > 0) {
                 Vector3 force = truster.GetForceVector();
                 Vector3 postion = truster.GetForcePostion();
-                truster.FireTuster(dot);
+                truster.FireTruster(dot);
             }
         }
     }

@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PlacementCast {
     private int buildMask;
-    public PlacementCast(int buildMask) {
-        this.buildMask = buildMask;
+    public PlacementCast() {
+        this.buildMask = NodeController.BuildMask;
     }
 
     public PlacementCastResult getTarget() {

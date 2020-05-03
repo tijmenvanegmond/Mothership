@@ -8,15 +8,10 @@ public class Construct : MonoBehaviour {
     protected HashSet<Node> myNodes;
 
     public virtual void Start() {
-        nodes = NodeController.NodeDict;
         myNodes = new HashSet<Node>();
 
-        AddChildNodesToMyNodes();
-    }
-
-    private void AddChildNodesToMyNodes() {
-        foreach (Transform child in transform)
-            AddNode(child.gameObject, false);
+        AddTranformNodesToMyNodes();
+        UpdateConstruct();
     }
 
     public bool AddNode(GameObject newNode, bool checkPlacement = true) {
@@ -54,6 +49,11 @@ public class Construct : MonoBehaviour {
         node.Remove();
         //TODO: recalculate properties
         this.UpdateConstruct();
+    }
+
+    protected void AddTranformNodesToMyNodes() {
+        foreach (Transform child in transform)
+            AddNode(child.gameObject, false);
     }
 
     protected virtual IEnumerable<GameObject> HandleBridgeRemoval(IEnumerable<HashSet<Node>> nodeSetList) {

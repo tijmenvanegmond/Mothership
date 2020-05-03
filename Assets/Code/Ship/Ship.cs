@@ -8,21 +8,21 @@ public class Ship : Construct { //should implement construct
     //TODO: it's only used for UI V-arrow
     public const float MAX_SPEED = 50f;
     public Rigidbody rBody;
-    public Truster[] Trusters = new Truster[0];
+    public Truster[] Trusters { get; private set; }
 
     public override void Start() {
-        base.Start();
         rBody = GetComponent<Rigidbody>();
         if (rBody == null) {
             rBody = gameObject.AddComponent<Rigidbody>() as Rigidbody;
-            rBody.drag = 0;
-            rBody.angularDrag = .3f;
-            rBody.useGravity = false;
-            rBody.interpolation = RigidbodyInterpolation.Interpolate;
-            rBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
+        rBody.drag = 0;
+        rBody.angularDrag = .3f;
+        rBody.useGravity = false;
+        rBody.interpolation = RigidbodyInterpolation.Interpolate;
+        rBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
-        AddChildNodesToMyNodes();
+        base.Start();
+
     }
 
     protected override IEnumerable<GameObject> HandleBridgeRemoval(IEnumerable<HashSet<Node>> nodeSetList) {
@@ -35,15 +35,6 @@ public class Ship : Construct { //should implement construct
     }
 
     protected override void UpdateConstruct() {
-        UpdateShip();
-    }
-
-    private void AddChildNodesToMyNodes() {
-        foreach (Transform child in transform)
-            AddNode(child.gameObject, false);
-    }
-
-    private void UpdateShip() {
         CalculateMass();
         UpdateTrusters();
     }
