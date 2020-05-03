@@ -1,33 +1,58 @@
+using System.Linq;
 using UnityEngine;
 public class BuildMode : MonoBehaviour {
-    private Node selectedNode;
+
     private GameObject CursorGO;
     private PlacementCast placementCast;
+    private int rotationStep = 0;
+    private int portNumber = 0;
+    private Node selectedNode;
+    public Node SelectedNode {
+        get => selectedNode;
+        private set {
+            selectedNode = value;
+            UpdateCursorShape();
+        }
+
+    }
+
     public BuildMode(PlacementCast placementCast) {
         this.placementCast = placementCast;
     }
 
-    void Update() {
-
+    public void Update() {
         var result = this.placementCast.getTarget();
         if (result == null) {
             CursorGO.SetActive(false);
             return;
         }
 
-        if (!selectedNode.HasPortOfType(result.port.TypeID)) {
+        if (!SelectedNode.HasPortOfType(result.port.TypeID)) {
             Debug.Log("SelectedNode does not have a port of a matching type");
             CursorGO.SetActive(false);
             return;
         }
-
         UpdateCursorPlacement(result);
 
     }
 
+    public void SetBuildNode(Node node) {
+        SelectedNode = node;
+    }
+
+    private void UpdateCursorShape() {
+        if (CursorGO != null)
+            Destroy(CursorGO);
+
+        CursorGO = Instantiate(SelectedNode.BuildPreviewCollider);
+        CursorGO.AddComponent<Cursor>();
+        CursorGO.SetActive(false);
+        CursorGO.name = "CURSOR";
+    }
+
     private void UpdateCursorPlacement(PlacementCastResult result) {
         //Calc node placement postion based on portPostions
-        var newPort = GetSelectedPort();
+        var newPort = GetSelectedPort(result);
         var pivot = new GameObject().transform;
         var t = CursorGO.transform;
         //reset cursor transform
@@ -40,12 +65,13 @@ public class BuildMode : MonoBehaviour {
         t.Translate(-newPort.Transform.localPosition, Space.Self);
         pivot.transform.rotation = result.port.Transform.rotation;
         pivot.transform.position = result.port.Transform.position;
+
         //rotate based on presetvalues
-        pivot.transform.Rotate(hitPortType.PlacementRotation.x, hitPortType.PlacementRotation.y, hitPortType.PlacementRotation.z, Space.Self);
+        pivot.transform.Rotate(result.portType.PlacementRotation.x, result.portType.PlacementRotation.y, result.portType.PlacementRotation.z, Space.Self);
         t.transform.parent = null;
         Destroy(pivot.gameObject);
 
-        CursorGO.transform.RotateAround(hitPort.Transform.position, hitPort.Transform.rotation * Vector3.up, Rotation * hitPortType.RotationStep);
+        CursorGO.transform.RotateAround(result.port.Transform.position, result.port.Transform.rotation * Vector3.up, rotationStep * result.portType.RotationStep);
         CursorGO.gameObject.SetActive(true);
     }
 
@@ -53,10 +79,10 @@ public class BuildMode : MonoBehaviour {
     /// get info of the current selected port of the selectednode (breaks on no matching porttypes)
     /// </summary>
     /// <returns></returns>
-    private ConnectionPoint GetSelectedPort() {
-        var matchingPorts = selectedNode.GetPortsOfType(hitPortType.ID);
+    private ConnectionPoint GetSelectedPort(PlacementCastResult result) {
+        var matchingPorts = SelectedNode.GetPortsOfType(result.port.TypeID);
         var amount = matchingPorts.Count();
-        return matchingPorts.ElementAt(PortNumber % amount);
+        return matchingPorts.ElementAt(portNumber % amount);
     }
 
 }
