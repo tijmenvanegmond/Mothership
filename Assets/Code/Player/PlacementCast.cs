@@ -6,8 +6,7 @@ public class PlacementCast {
         this.buildMask = NodeController.BuildMask;
     }
 
-    public PlacementCastResult getTarget() {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    public PlacementCastResult getTarget(Ray ray) {
         RaycastHit hit;
         Physics.Raycast(ray, out hit, buildMask);
         Debug.DrawLine(ray.origin, hit.point, Color.green, 1f);

@@ -1,7 +1,6 @@
 using System.Linq;
 using UnityEngine;
 public class NodePlacer : MonoBehaviour {
-
     private GameObject CursorGO;
     private PlacementCast placementCast;
     private int rotationStep = 0;
@@ -20,8 +19,17 @@ public class NodePlacer : MonoBehaviour {
         this.placementCast = new PlacementCast();
     }
 
-    public void UpdateCursor() {
-        var result = this.placementCast.getTarget();
+    public void SetBuildNode(Node node) {
+        SelectedNode = node;
+    }
+
+    public bool PlaceNode() {
+        Debug.Log("Placing node");
+        return true;
+    }
+
+    public void UpdateCursor(Ray ray) {
+        var result = this.placementCast.getTarget(ray);
         if (result == null) {
             CursorGO.SetActive(false);
             return;
@@ -34,10 +42,6 @@ public class NodePlacer : MonoBehaviour {
         }
         UpdateCursorPlacement(result);
 
-    }
-
-    public void SetBuildNode(Node node) {
-        SelectedNode = node;
     }
 
     private void UpdateCursorShape() {
