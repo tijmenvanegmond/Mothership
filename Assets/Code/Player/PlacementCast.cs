@@ -26,7 +26,9 @@ public class PlacementCast {
         var portGO = Utility.FindParentWithTag(hit.collider.gameObject, "Port");
         if (portGO == null)
             return null;
-        result.port = portGO.GetComponent<ConnectionPoint>();
+
+        result.port = result.node.GetMatchingPort(portGO);
+
         return result;
     }
 }

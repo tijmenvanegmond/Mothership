@@ -5,11 +5,11 @@ public class NodePlacer : MonoBehaviour {
     private PlacementCast placementCast;
     private int rotationStep = 0;
     private int portNumber = 0;
-    private Node selectedNode;
-    public Node SelectedNode {
-        get => selectedNode;
+    private Node _selectedNode;
+    public Node selectedNode {
+        get => _selectedNode;
         private set {
-            selectedNode = value;
+            _selectedNode = value;
             UpdateCursorShape();
         }
 
@@ -20,7 +20,7 @@ public class NodePlacer : MonoBehaviour {
     }
 
     public void SetBuildNode(Node node) {
-        SelectedNode = node;
+        selectedNode = node;
     }
 
     public bool PlaceNode() {
@@ -31,11 +31,12 @@ public class NodePlacer : MonoBehaviour {
     public void UpdateCursor(Ray ray) {
         var result = this.placementCast.getTarget(ray);
         if (result == null) {
+            Debug.Log("Cast did not return valid node");
             CursorGO.SetActive(false);
             return;
         }
 
-        if (!SelectedNode.HasPortOfType(result.port.TypeID)) {
+        if (!selectedNode.HasPortOfType(result.port.TypeID)) {
             Debug.Log("SelectedNode does not have a port of a matching type");
             CursorGO.SetActive(false);
             return;
@@ -48,7 +49,7 @@ public class NodePlacer : MonoBehaviour {
         if (CursorGO != null)
             Destroy(CursorGO);
 
-        CursorGO = Instantiate(SelectedNode.BuildPreviewCollider);
+        CursorGO = Instantiate(selectedNode.BuildPreviewCollider);
         CursorGO.AddComponent<Cursor>();
         CursorGO.SetActive(false);
         CursorGO.name = "CURSOR";
@@ -84,7 +85,7 @@ public class NodePlacer : MonoBehaviour {
     /// </summary>
     /// <returns></returns>
     private ConnectionPoint GetSelectedPort(PlacementCastResult result) {
-        var matchingPorts = SelectedNode.GetPortsOfType(result.port.TypeID);
+        var matchingPorts = selectedNode.GetPortsOfType(result.port.TypeID);
         var amount = matchingPorts.Count();
         return matchingPorts.ElementAt(portNumber % amount);
     }

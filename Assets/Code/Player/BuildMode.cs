@@ -3,19 +3,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class BuildMode : MonoBehaviour {
+    private PlayerControls controls;
 
     private NodePlacer nodePlacer;
 
-    public void OnFire() {
-        nodePlacer.PlaceNode();
-    }
+    public void Awake() {
+        controls = new PlayerControls();
 
-    public void OnMove(InputValue input) {
-        // Debug.Log(input.Get<Vector2>());
-    }
-
-    public void OnLook(InputValue input) {
-        // Debug.Log(input.Get());
+        controls.Build.Place.performed += ctx => nodePlacer.PlaceNode();
     }
 
     public void Start() {
@@ -26,6 +21,18 @@ public class BuildMode : MonoBehaviour {
     public void Update() {
         Ray ray = Camera.main.ScreenPointToRay(new Vector2(.5f, .5f)); //Input.mousePosition);
         nodePlacer.UpdateCursor(ray);
+    }
+
+    void OnEnable() {
+        if (controls != null)
+            controls.Build.Enable();
+
+    }
+
+    void OnDisable() {
+        if (controls != null)
+            controls.Build.Disable();
+
     }
 
 }
