@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 public class NodePlacer : MonoBehaviour {
     private GameObject CursorGO;
-    private PlacementCast placementCast;
+
     private int rotationStep = 0;
     private int portNumber = 0;
     private Node _selectedNode;
@@ -15,23 +15,34 @@ public class NodePlacer : MonoBehaviour {
 
     }
 
-    public NodePlacer() {
-        this.placementCast = new PlacementCast();
-    }
-
     public void SetBuildNode(Node node) {
         selectedNode = node;
     }
 
-    public bool PlaceNode() {
+    public bool PlaceNode(PlacementCastResult target) {
+        Debug.Log(target);
+        if (target == null) {
+            return false;
+        }
         Debug.Log("Placing node");
-        return true;
+
+        UpdateCursor(target);
+
+        if (CursorGO.GetComponent<Cursor>().IsFree) {
+            var nodeGO = Instantiate(selectedNode.gameObject, target.ship.transform);
+            nodeGO.transform.position = CursorGO.transform.position;
+            nodeGO.transform.rotation = CursorGO.transform.rotation;
+            nodeGO.transform.localScale = CursorGO.transform.localScale;
+            target.ship.AddNode(nodeGO);
+            return false;
+        } else {
+            Debug.Log("Object:" + CursorGO.GetComponent<Cursor>().Obstruction + "\n Is obstucting");
+            return true;
+        }
     }
 
-    public void UpdateCursor(Ray ray) {
-        var result = this.placementCast.getTarget(ray);
+    public void UpdateCursor(PlacementCastResult result) {
         if (result == null) {
-            Debug.Log("Cast did not return valid node");
             CursorGO.SetActive(false);
             return;
         }
