@@ -2,7 +2,6 @@ using System.Linq;
 using UnityEngine;
 public class NodePlacer : MonoBehaviour {
     private GameObject CursorGO;
-
     private int rotationStep = 0;
     private int portNumber = 0;
     private Node _selectedNode;
@@ -13,6 +12,10 @@ public class NodePlacer : MonoBehaviour {
             UpdateCursorShape();
         }
 
+    }
+
+    public void Rotate() {
+        rotationStep++;
     }
 
     public void SetBuildNode(Node node) {

@@ -4,14 +4,42 @@ using UnityEngine.InputSystem;
 
 public class BuildMode : MonoBehaviour {
     private PlayerControls controls;
-
     private NodePlacer nodePlacer;
     private PlacementCast placementCast;
+    private int _selectedNode = 0;
+    private int NODE_MAX = 8; //temp for easy loop around
+    private int selectedNode {
+        get => _selectedNode;
+        set {
+            if (value < 0) {
+                _selectedNode = NODE_MAX;
+            } else if (value > NODE_MAX) {
+                _selectedNode = 0;
+            } else {
+                _selectedNode = value;
+            }
+        }
+    }
 
     public void Awake() {
         controls = new PlayerControls();
 
         controls.Build.Place.performed += ctx => this.PlaceNode();
+
+        controls.Build.Rotate.performed += ctx => this.nodePlacer.Rotate();
+
+        controls.Build.CycleNodeSelection.performed += ctx => CycleNodeSelection(ctx.ReadValue<float>());
+
+    }
+
+    private void CycleNodeSelection(float delta) {
+        if (delta > 0) {
+            selectedNode++;
+        } else if (delta < 0) {
+            selectedNode--;
+        }
+
+        nodePlacer.SetBuildNode(NodeController.GetNode(selectedNode));
     }
 
     private void PlaceNode() {
@@ -23,13 +51,12 @@ public class BuildMode : MonoBehaviour {
         } else {
             Debug.Log("No target found");
         }
-
     }
 
     public void Start() {
         placementCast = new PlacementCast();
         nodePlacer = gameObject.AddComponent<NodePlacer>();
-        nodePlacer.SetBuildNode(NodeController.GetNode(0));
+        nodePlacer.SetBuildNode(NodeController.GetNode(selectedNode));
     }
 
     public void Update() {
