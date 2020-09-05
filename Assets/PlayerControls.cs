@@ -51,6 +51,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": ""Press""
                 },
                 {
+                    ""name"": ""ChangePort"",
+                    ""type"": ""Button"",
+                    ""id"": ""c13915f5-0bb5-4124-ad11-1a63a8fda481"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
+                },
+                {
                     ""name"": ""CycleNodeSelection"",
                     ""type"": ""Value"",
                     ""id"": ""1bc7fdb6-2bde-465b-a000-7db3b3618fd1"",
@@ -222,6 +230,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""47939e76-f850-49e4-9a00-f2b2265ef59d"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ChangePort"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""57baf20f-7a0e-494c-8fda-905799e1b466"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ChangePort"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1257,6 +1287,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Build_Remove = m_Build.FindAction("Remove", throwIfNotFound: true);
         m_Build_Place = m_Build.FindAction("Place", throwIfNotFound: true);
         m_Build_Rotate = m_Build.FindAction("Rotate", throwIfNotFound: true);
+        m_Build_ChangePort = m_Build.FindAction("ChangePort", throwIfNotFound: true);
         m_Build_CycleNodeSelection = m_Build.FindAction("CycleNodeSelection", throwIfNotFound: true);
         // Fight
         m_Fight = asset.FindActionMap("Fight", throwIfNotFound: true);
@@ -1335,6 +1366,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Build_Remove;
     private readonly InputAction m_Build_Place;
     private readonly InputAction m_Build_Rotate;
+    private readonly InputAction m_Build_ChangePort;
     private readonly InputAction m_Build_CycleNodeSelection;
     public struct BuildActions
     {
@@ -1344,6 +1376,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Remove => m_Wrapper.m_Build_Remove;
         public InputAction @Place => m_Wrapper.m_Build_Place;
         public InputAction @Rotate => m_Wrapper.m_Build_Rotate;
+        public InputAction @ChangePort => m_Wrapper.m_Build_ChangePort;
         public InputAction @CycleNodeSelection => m_Wrapper.m_Build_CycleNodeSelection;
         public InputActionMap Get() { return m_Wrapper.m_Build; }
         public void Enable() { Get().Enable(); }
@@ -1366,6 +1399,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Rotate.started -= m_Wrapper.m_BuildActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_BuildActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_BuildActionsCallbackInterface.OnRotate;
+                @ChangePort.started -= m_Wrapper.m_BuildActionsCallbackInterface.OnChangePort;
+                @ChangePort.performed -= m_Wrapper.m_BuildActionsCallbackInterface.OnChangePort;
+                @ChangePort.canceled -= m_Wrapper.m_BuildActionsCallbackInterface.OnChangePort;
                 @CycleNodeSelection.started -= m_Wrapper.m_BuildActionsCallbackInterface.OnCycleNodeSelection;
                 @CycleNodeSelection.performed -= m_Wrapper.m_BuildActionsCallbackInterface.OnCycleNodeSelection;
                 @CycleNodeSelection.canceled -= m_Wrapper.m_BuildActionsCallbackInterface.OnCycleNodeSelection;
@@ -1385,6 +1421,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
+                @ChangePort.started += instance.OnChangePort;
+                @ChangePort.performed += instance.OnChangePort;
+                @ChangePort.canceled += instance.OnChangePort;
                 @CycleNodeSelection.started += instance.OnCycleNodeSelection;
                 @CycleNodeSelection.performed += instance.OnCycleNodeSelection;
                 @CycleNodeSelection.canceled += instance.OnCycleNodeSelection;
@@ -1662,6 +1701,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnRemove(InputAction.CallbackContext context);
         void OnPlace(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnChangePort(InputAction.CallbackContext context);
         void OnCycleNodeSelection(InputAction.CallbackContext context);
     }
     public interface IFightActions

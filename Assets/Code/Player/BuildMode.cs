@@ -28,6 +28,8 @@ public class BuildMode : MonoBehaviour {
 
         controls.Build.Rotate.performed += ctx => this.nodePlacer.Rotate();
 
+        controls.Build.ChangePort.performed += ctx => this.nodePlacer.ChangePort();
+
         controls.Build.CycleNodeSelection.performed += ctx => CycleNodeSelection(ctx.ReadValue<float>());
 
     }

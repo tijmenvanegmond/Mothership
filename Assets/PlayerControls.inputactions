@@ -38,6 +38,14 @@
                     "interactions": "Press"
                 },
                 {
+                    "name": "ChangePort",
+                    "type": "Button",
+                    "id": "c13915f5-0bb5-4124-ad11-1a63a8fda481",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
                     "name": "CycleNodeSelection",
                     "type": "Value",
                     "id": "1bc7fdb6-2bde-465b-a000-7db3b3618fd1",
@@ -209,6 +217,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47939e76-f850-49e4-9a00-f2b2265ef59d",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ChangePort",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "57baf20f-7a0e-494c-8fda-905799e1b466",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ChangePort",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

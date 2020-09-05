@@ -18,6 +18,10 @@ public class NodePlacer : MonoBehaviour {
         rotationStep++;
     }
 
+    public void ChangePort() {
+        portNumber++;
+    }
+
     public void SetBuildNode(Node node) {
         selectedNode = node;
     }
