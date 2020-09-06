@@ -26,6 +26,10 @@ public class NodePlacer : MonoBehaviour {
         selectedNode = node;
     }
 
+    public void RemoveNode(PlacementCastResult target) {
+        target.ship.RemoveNode(target.node);
+    }
+
     public bool PlaceNode(PlacementCastResult target) {
         Debug.Log(target);
         if (target == null) {

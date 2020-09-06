@@ -26,6 +26,8 @@ public class BuildMode : MonoBehaviour {
 
         controls.Build.Place.performed += ctx => this.PlaceNode();
 
+        controls.Build.Remove.performed += ctx => this.RemoveNode();
+
         controls.Build.Rotate.performed += ctx => this.nodePlacer.Rotate();
 
         controls.Build.ChangePort.performed += ctx => this.nodePlacer.ChangePort();
@@ -42,6 +44,18 @@ public class BuildMode : MonoBehaviour {
         }
 
         nodePlacer.SetBuildNode(NodeController.GetNode(selectedNode));
+    }
+
+    private void RemoveNode() {
+
+        Ray ray = new Ray(transform.position, transform.forward); //Camera.main.ScreenPointToRay(new Vector2(.5f, .5f)); //Input.mousePosition);
+        var target = placementCast.getTarget(ray);
+        if (target != null) {
+            Debug.Log("Removing node");
+            nodePlacer.RemoveNode(target);
+        } else {
+            Debug.Log("No target found");
+        }
     }
 
     private void PlaceNode() {
