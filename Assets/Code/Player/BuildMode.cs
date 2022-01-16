@@ -3,21 +3,31 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class BuildMode : MonoBehaviour {
+    public GameObject UISelectedNodePlace;
     private PlayerControls controls;
     private NodePlacer nodePlacer;
     private PlacementCast placementCast;
-    private int _selectedNode = 0;
-    private int NODE_MAX = 8; //temp for easy loop around
-    private int selectedNode {
-        get => _selectedNode;
+    private int __selectedNodeIndex = 0;
+    private int NODE_MAX_INDEX = 8; //temp for easy loop around
+    private int _selectedNodeIndex {
+        get => __selectedNodeIndex;
         set {
             if (value < 0) {
-                _selectedNode = NODE_MAX;
-            } else if (value > NODE_MAX) {
-                _selectedNode = 0;
+                __selectedNodeIndex = NODE_MAX_INDEX;
+            } else if (value > NODE_MAX_INDEX) {
+                __selectedNodeIndex = 0;
             } else {
-                _selectedNode = value;
+                __selectedNodeIndex = value;
             }
+        }
+    }
+
+    private Node _selectedNode;
+    public Node selectedNode { 
+        get=> _selectedNode;
+        private set {
+            _selectedNode = value;
+            UpdateNodePreview(value);
         }
     }
 
@@ -36,14 +46,55 @@ public class BuildMode : MonoBehaviour {
 
     }
 
-    private void CycleNodeSelection(float delta) {
-        if (delta > 0) {
-            selectedNode++;
-        } else if (delta < 0) {
-            selectedNode--;
+    private void UpdateNodePreview(Node node){
+        foreach(Transform child in UISelectedNodePlace.transform)
+        {
+            Destroy(child.gameObject);
         }
 
-        nodePlacer.SetBuildNode(NodeController.GetNode(selectedNode));
+        var nodeGO = Instantiate(selectedNode.gameObject, UISelectedNodePlace.transform);
+        nodeGO.layer = UISelectedNodePlace.layer;
+        foreach(Transform child in nodeGO.transform)
+        {
+            child.gameObject.layer = UISelectedNodePlace.layer;
+        }
+        nodeGO.AddComponent<RotateAnim>();
+
+    }
+
+    private void CycleNodeSelection(float delta) {
+        if (delta > 0) {
+            _selectedNodeIndex++;
+        } else if (delta < 0) {
+            _selectedNodeIndex--;
+        }
+
+        selectedNode = NodeController.GetNode(_selectedNodeIndex);
+        nodePlacer.SetBuildNode(selectedNode);
+    }
+
+    public void Start() {
+        placementCast = new PlacementCast();
+        nodePlacer = gameObject.AddComponent<NodePlacer>();
+        CycleNodeSelection(0f);
+    }
+
+    public void Update() {
+        Ray ray = new Ray(transform.position, transform.forward); //Camera.main.ScreenPointToRay(new Vector2(.5f, .5f)); //Input.mousePosition);
+        var target = placementCast.getTarget(ray);
+        nodePlacer.UpdateCursor(target);
+    }
+
+    void OnEnable() {
+        if (controls != null)
+            controls.Build.Enable();
+
+    }
+
+    void OnDisable() {
+        if (controls != null)
+            controls.Build.Disable();
+
     }
 
     private void RemoveNode() {
@@ -69,28 +120,6 @@ public class BuildMode : MonoBehaviour {
         }
     }
 
-    public void Start() {
-        placementCast = new PlacementCast();
-        nodePlacer = gameObject.AddComponent<NodePlacer>();
-        nodePlacer.SetBuildNode(NodeController.GetNode(selectedNode));
-    }
-
-    public void Update() {
-        Ray ray = new Ray(transform.position, transform.forward); //Camera.main.ScreenPointToRay(new Vector2(.5f, .5f)); //Input.mousePosition);
-        var target = placementCast.getTarget(ray);
-        nodePlacer.UpdateCursor(target);
-    }
-
-    void OnEnable() {
-        if (controls != null)
-            controls.Build.Enable();
-
-    }
-
-    void OnDisable() {
-        if (controls != null)
-            controls.Build.Disable();
-
-    }
+   
 
 }

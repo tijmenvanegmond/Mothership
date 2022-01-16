@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShipUI : MonoBehaviour {
-
+public class ShipUI : MonoBehaviour
+{
     public Rigidbody rBody;
     public const float maxSpeed = 50f;
     public GameObject UISpeedometer;
@@ -14,8 +14,10 @@ public class ShipUI : MonoBehaviour {
     private Text speedometerText;
     private Text dampeningIndicatorText;
 
-    void Start() {
-        if (rBody == null) {
+    void Start()
+    {
+        if (rBody == null)
+        {
             Debug.LogError("Ship must be assigned for UI to work");
         }
 
@@ -24,8 +26,8 @@ public class ShipUI : MonoBehaviour {
         arrowRenderer = UIVelocityArrow.GetComponent<ArrowRenderer>();
     }
 
-    void Update() {
-
+    void Update()
+    {
         var speed = rBody.velocity.magnitude;
         speedometerText.text = "Speed : " + (speed * 3.6f).ToString("0.0") + "km/h";
         //dampeningIndicatorText.text = isDampening ? "Dampening : ON" : "Dampening : OFF";
@@ -34,8 +36,11 @@ public class ShipUI : MonoBehaviour {
         //Arrow ui
         if (rBody.velocity != Vector3.zero)
             UIVelocityArrow.transform.rotation = Quaternion.LookRotation(rBody.velocity);
+
+
         var arrowScalar = Mathf.Sqrt(speed / maxSpeed);
-        arrowRenderer.length = Mathf.Min(1f, arrowScalar * 2f);
-        arrowRenderer.radius = Mathf.Min(.4f, arrowScalar * 1.2f);
+        var halfDot = Vector3.Dot(transform.forward, rBody.velocity.normalized)/2f;     
+        var arrowColor = new Color(.5f  - halfDot, .5f + halfDot, .5f + halfDot);
+        arrowRenderer.UpdateArrow(arrowScalar,arrowColor );
     }
 }

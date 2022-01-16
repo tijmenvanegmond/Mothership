@@ -2,18 +2,17 @@
 using UnityEngine;
 
 public class ArrowRenderer : MonoBehaviour {
-    public Camera RenderCamera;
+    public Camera RenderCamera;    
     public Color lineColor = new Color (0.0f, 1.0f, 1.0f);
     public float lineWidth = 3;
-    public int size = 0;
-    public Material lineMaterial;
-    public float radius = .5f;
-    public float length = 1f;
+    public Material lineMaterial;   
     public int steps = 4;
     [Tooltip ("Steps must be divisible by lines")]
     public int lines = 4;
-    float stepSize;
-    Vector3[] vertices;
+    private float stepSize;
+    private Vector3[] vertices;
+    private float radius = .5f;
+    private float length = 1f;
 
     void Start () {
         lineMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -38,8 +37,11 @@ public class ArrowRenderer : MonoBehaviour {
         return gameObject.transform.TransformPoint (vec);
     }
 
-    void Update () {
         //create base verts
+    public void UpdateArrow (float scalar, Color color ) {
+        lineMaterial.color = color;
+        length = Mathf.Min(1f, scalar * 2f);
+        radius = Mathf.Min(.4f, scalar * 1.2f);
         float stepSize = (2f * Mathf.PI) / steps;
         for (int i = 0; i < steps; i++)
             vertices[i] = new Vector3 (Mathf.Cos (stepSize * i) * radius, Mathf.Sin (stepSize * i) * radius, 0);
