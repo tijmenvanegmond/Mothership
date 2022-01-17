@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour {
+    
     private PlayerControls controls;
     public Vector3 rotationSpeed = new Vector3(1f, 1f, 1f);
     public Vector3 movementSpeed = new Vector3(1f, 1f, 1f);
@@ -39,15 +40,14 @@ public class PlayerMovementController : MonoBehaviour {
     }
 
     void Update() {
-        movementInput = new Vector3(hMove.x, vMove, hMove.y);
         rotationInput = new Vector3(look.y * -1, look.x, roll * -1);
+        Quaternion deltaRotation = Quaternion.Euler(new Vector3(rotationInput.x * rotationSpeed.x, rotationInput.y * rotationSpeed.y, rotationInput.z * rotationSpeed.z) * Time.deltaTime);
+        //rBody.AddRelativeTorque(deltaRotation, ForceMode.VelocityChange);
+        rBody.MoveRotation(rBody.rotation * deltaRotation);
 
+        movementInput = new Vector3(hMove.x, vMove, hMove.y);
         var applyMovement = new Vector3(movementInput.x * movementSpeed.x, movementInput.y * movementSpeed.y, movementInput.z * movementSpeed.z) * Time.deltaTime;
-        var applyRotation = new Vector3(rotationInput.x * rotationSpeed.x, rotationInput.y * rotationSpeed.y, rotationInput.z * rotationSpeed.z) * Time.deltaTime;
-
-        rBody.AddRelativeTorque(applyRotation, ForceMode.VelocityChange);
         rBody.AddRelativeForce(applyMovement, ForceMode.VelocityChange);
-
     }
 
     void OnEnable() {
