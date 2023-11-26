@@ -11,7 +11,8 @@
                     "id": "ce5e42d5-f557-44a0-a646-cc3bfc301ab6",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Hold"
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Remove",
@@ -19,7 +20,8 @@
                     "id": "6095fa45-8e78-4922-a0dc-0986dde5c93c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Place",
@@ -27,7 +29,8 @@
                     "id": "e00291a1-3cd9-4c99-b0d7-534584d1aa08",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Rotate",
@@ -35,7 +38,8 @@
                     "id": "420ac3ca-371f-449c-8927-f5648270a948",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "ChangePort",
@@ -43,15 +47,17 @@
                     "id": "c13915f5-0bb5-4124-ad11-1a63a8fda481",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "CycleNodeSelection",
                     "type": "Value",
                     "id": "1bc7fdb6-2bde-465b-a000-7db3b3618fd1",
-                    "expectedControlType": "Digital",
+                    "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -81,7 +87,7 @@
                     "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
                     "path": "<Gamepad>/buttonSouth",
-                    "interactions": "Press",
+                    "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Place",
@@ -92,7 +98,7 @@
                     "name": "",
                     "id": "05f6913d-c316-48b2-a6bb-e225f14c7960",
                     "path": "<Mouse>/leftButton",
-                    "interactions": "Press",
+                    "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Place",
@@ -122,12 +128,12 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "7e6c070c-e079-4773-bc6e-df7499b969cb",
-                    "path": "<Mouse>/scroll/x",
+                    "name": "positive",
+                    "id": "7e4047cf-6fc3-420b-98a4-b63cc949909e",
+                    "path": "<Keyboard>/period",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "CycleNodeSelection",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -138,29 +144,7 @@
                     "path": "<Keyboard>/comma",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "CycleNodeSelection",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "6748760a-df3d-4c7c-b058-fe227191a028",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CycleNodeSelection",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "7e4047cf-6fc3-420b-98a4-b63cc949909e",
-                    "path": "<Keyboard>/period",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "CycleNodeSelection",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -182,7 +166,7 @@
                     "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Gamepad",
                     "action": "CycleNodeSelection",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -193,10 +177,21 @@
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Gamepad",
                     "action": "CycleNodeSelection",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "4138671b-54d2-4796-a230-4ae7e8cbb112",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CycleNodeSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
@@ -254,7 +249,8 @@
                     "id": "ae764b2d-ac69-415f-9664-05f89c2dc5ee",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "SecondaryFire",
@@ -262,7 +258,8 @@
                     "id": "975477f0-4a32-4ad0-bd6b-74dffc1e3897",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Interact",
@@ -270,7 +267,8 @@
                     "id": "171f3c30-caf4-448a-b9fb-2039afc32e0d",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -374,7 +372,8 @@
                     "id": "5275965e-ddd7-4656-9eac-fc4c042b4e1f",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Submit",
@@ -382,7 +381,8 @@
                     "id": "b8b6dae7-120a-4348-839d-818bb3275e87",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Cancel",
@@ -390,7 +390,8 @@
                     "id": "6f5adb06-041e-48ab-b061-aecc149e24a0",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Point",
@@ -398,7 +399,8 @@
                     "id": "0d5c5ec8-23a5-4aa0-9049-dd6e64b850be",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Click",
@@ -406,7 +408,8 @@
                     "id": "caf3337c-5972-449d-b6e9-4cf69c8e81bb",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "ScrollWheel",
@@ -414,7 +417,8 @@
                     "id": "d057141a-7c19-47dd-89dd-e52d2f2a9405",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MiddleClick",
@@ -422,7 +426,8 @@
                     "id": "3531da66-6490-4bf4-813a-2881edd5e410",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "RightClick",
@@ -430,7 +435,8 @@
                     "id": "9ec96696-5585-4ca9-b3d7-5fdf2710cdf6",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "TrackedDevicePosition",
@@ -438,7 +444,8 @@
                     "id": "26675d46-a82d-43e1-9f55-40eebaf31469",
                     "expectedControlType": "Vector3",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "TrackedDeviceOrientation",
@@ -446,7 +453,8 @@
                     "id": "09b0dcb1-613c-42e3-aade-9f066a32fd32",
                     "expectedControlType": "Quaternion",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -880,7 +888,8 @@
                     "id": "b816916a-0e7e-4357-bb63-5853e9c3bd40",
                     "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Horizontal",
@@ -888,7 +897,8 @@
                     "id": "f92bd940-45da-4eb1-a5dc-3b13382c1e3c",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Roll",
@@ -896,7 +906,8 @@
                     "id": "31a1946b-a820-4699-a8ba-7899c6a67af2",
                     "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Look",
@@ -904,7 +915,8 @@
                     "id": "3175c827-a9b9-44bf-81c1-0add548e8b10",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Boost",
@@ -912,7 +924,17 @@
                     "id": "993dcabf-e85a-4993-b6ff-42d47d526ab2",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleDamping",
+                    "type": "Button",
+                    "id": "c94d3aea-f8e6-43e8-957a-d298ca23536e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1199,6 +1221,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Boost",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5a3d5428-9f9c-438d-89d0-939c428f5cdb",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ToggleDamping",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -5,16 +5,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour {
     
+    public float DRAG;
     private PlayerControls controls;
     public Vector3 rotationSpeed = new Vector3(1f, 1f, 1f);
     public Vector3 movementSpeed = new Vector3(1f, 1f, 1f);
     private Vector3 movementInput, rotationInput;
     private Rigidbody rBody;
-    private float drag, angularDrag;
-
     private Vector2 hMove;
     private float vMove;
-
     private Vector2 look;
     private float roll;
 
@@ -32,6 +30,17 @@ public class PlayerMovementController : MonoBehaviour {
 
         controls.Movement.Roll.performed += ctx => roll = ctx.ReadValue<float>();
         controls.Movement.Roll.canceled += ctx => roll = 0f;
+
+        controls.Movement.ToggleDamping.performed += ctx => this.ToggleDamping();
+    }
+
+    void ToggleDamping() {
+        if(rBody.drag == 0f){
+            rBody.drag = DRAG;
+        }
+        else {
+            rBody.drag = 0f;
+        }
     }
 
     void Start() {
@@ -41,7 +50,7 @@ public class PlayerMovementController : MonoBehaviour {
 
     void Update() {
         rotationInput = new Vector3(look.y * -1, look.x, roll * -1);
-        Quaternion deltaRotation = Quaternion.Euler(new Vector3(rotationInput.x * rotationSpeed.x, rotationInput.y * rotationSpeed.y, rotationInput.z * rotationSpeed.z) * Time.deltaTime);
+        Quaternion deltaRotation = Quaternion.Euler(new Vector3(rotationInput.x * rotationSpeed.x, rotationInput.y * rotationSpeed.y, rotationInput.z * rotationSpeed.z));
         //rBody.AddRelativeTorque(deltaRotation, ForceMode.VelocityChange);
         rBody.MoveRotation(rBody.rotation * deltaRotation);
 

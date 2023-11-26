@@ -7,17 +7,17 @@ public class BuildMode : MonoBehaviour {
     private PlayerControls controls;
     private NodePlacer nodePlacer;
     private PlacementCast placementCast;
-    private int __selectedNodeIndex = 0;
-    private int NODE_MAX_INDEX = 8; //temp for easy loop around
-    private int _selectedNodeIndex {
-        get => __selectedNodeIndex;
+    public int NODE_MAX_INDEX = 8; //temp for easy loop around
+    private int _selectedNodeIndex = 0;
+    private int selectedNodeIndex {
+        get => _selectedNodeIndex;
         set {
             if (value < 0) {
-                __selectedNodeIndex = NODE_MAX_INDEX;
+                _selectedNodeIndex = NODE_MAX_INDEX;
             } else if (value > NODE_MAX_INDEX) {
-                __selectedNodeIndex = 0;
+                _selectedNodeIndex = 0;
             } else {
-                __selectedNodeIndex = value;
+                _selectedNodeIndex = value;
             }
         }
     }
@@ -42,7 +42,7 @@ public class BuildMode : MonoBehaviour {
 
         controls.Build.ChangePort.performed += ctx => this.nodePlacer.ChangePort();
 
-        controls.Build.CycleNodeSelection.performed += ctx => CycleNodeSelection(ctx.ReadValue<float>());
+        controls.Build.CycleNodeSelection.performed += ctx => this.CycleNodeSelection(ctx.ReadValue<float>());
 
     }
 
@@ -64,12 +64,12 @@ public class BuildMode : MonoBehaviour {
 
     private void CycleNodeSelection(float delta) {
         if (delta > 0) {
-            _selectedNodeIndex++;
+            selectedNodeIndex++;
         } else if (delta < 0) {
-            _selectedNodeIndex--;
+            selectedNodeIndex--;
         }
 
-        selectedNode = NodeController.GetNode(_selectedNodeIndex);
+        selectedNode = NodeController.GetNode(selectedNodeIndex);
         nodePlacer.SetBuildNode(selectedNode);
     }
 
